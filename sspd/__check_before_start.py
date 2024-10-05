@@ -13,8 +13,8 @@ def __write_default_service() -> str:
             default_service_file, sspd.REMOTE_PATH_TO_SERVICES_DIR + sspd.REMOTE_SERVICE_FILENAME
         )
     sspd.SSH_REMOTE_MACHINE.exec_command("sudo systemctl daemon-reload")
-    sspd.SSH_REMOTE_MACHINE.exec_command(f'sudo systemctl enable {sspd.REMOTE_SERVICE_FILENAME}')
-    sspd.SSH_REMOTE_MACHINE.exec_command(f'sudo systemctl start {sspd.REMOTE_SERVICE_FILENAME}')
+    sspd.SSH_REMOTE_MACHINE.exec_command(f"sudo systemctl enable {sspd.REMOTE_SERVICE_FILENAME}")
+    sspd.SSH_REMOTE_MACHINE.exec_command(f"sudo systemctl start {sspd.REMOTE_SERVICE_FILENAME}")
     return service_filepath_created_by_sspd
 
 
@@ -26,7 +26,7 @@ def check_local_project_dir():
 def check_remote_project_dir():
     for i in range(2):
         _, _, stderr = sspd.SSH_REMOTE_MACHINE.exec_command(f"cd {sspd.REMOTE_PROJECT_DIR_PATH}")
-        if 'No such file or directory' in stderr.read().decode():
+        if "No such file or directory" in stderr.read().decode():
             if i == 0:
                 sspd.SSH_REMOTE_MACHINE.exec_command(
                     f"mkdir -p {sspd.REMOTE_PROJECT_DIR_PATH}"
@@ -40,7 +40,7 @@ def check_remote_venv():
         _, _, stderr = sspd.SSH_REMOTE_MACHINE.exec_command(
             f"source {sspd.REMOTE_PROJECT_DIR_PATH}/{sspd.REMOTE_VENV_DIR_NAME}/bin/activate"
         )
-        if 'No such file or directory' in stderr.read().decode():
+        if "No such file or directory" in stderr.read().decode():
             if i == 0:
                 print(f"Creating '{sspd.REMOTE_VENV_DIR_NAME}' in remote project dir...")
                 _, _, stderr = sspd.SSH_REMOTE_MACHINE.exec_command(

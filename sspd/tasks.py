@@ -54,7 +54,7 @@ def send_files_from_project_dir(filenames: set[str]):
 def stop_running_remote_code():
     __misc.print_request("Stop running remote py code")
     status, response = execute_remote_command(
-        f'sudo systemctl stop {sspd.REMOTE_SERVICE_FILENAME}', print_response=True, ignore_error=True,
+        f"sudo systemctl stop {sspd.REMOTE_SERVICE_FILENAME}", print_response=True, ignore_error=True,
     )
     if status == -1:
         sign2break = "Br"
@@ -66,13 +66,13 @@ def stop_running_remote_code():
 
 def start_running_remote_code():
     __misc.print_request("Start running remote py code")
-    execute_remote_command(f'sudo systemctl start {sspd.REMOTE_SERVICE_FILENAME}', print_response=True)
+    execute_remote_command(f"sudo systemctl start {sspd.REMOTE_SERVICE_FILENAME}", print_response=True)
 
 
 def run_reinstalling_remote_requirements():
     __misc.print_request(f"Try to reinstall requirements in remote '{sspd.REMOTE_VENV_DIR_NAME}'")
     execute_remote_command(
-        f'{sspd.REMOTE_PROJECT_DIR_PATH}/{sspd.REMOTE_VENV_DIR_NAME}/bin/pip install -r {sspd.REMOTE_PROJECT_DIR_PATH}/requirements.txt',
+        f"{sspd.REMOTE_PROJECT_DIR_PATH}/{sspd.REMOTE_VENV_DIR_NAME}/bin/pip install -r {sspd.REMOTE_PROJECT_DIR_PATH}/requirements.txt",
         print_response=True
     )
 
