@@ -4,42 +4,42 @@ import os.path
 
 class ConfigFile:
     def __init__(self, config_path: str):
-        self.config = configparser.ConfigParser()
+        config_path = config_path.strip()
+        self.CONFIG = configparser.ConfigParser()
         if os.path.exists(path=config_path):
-            self.config.read(config_path)
+            self.CONFIG.read(config_path)
         else:
             with open(file=config_path, mode="w", encoding="UTF-8") as c:
-                self.config.write(c)
-        self.config_path = config_path
+                self.CONFIG.write(c)
+        self.CONFIG_PATH = config_path
 
     def get_required_value(self, section: str, option: str, required_type=str):
+        value = self.get_optional_value(section=section, option=option, required_type=required_type)
+        if value is None:
+            value = self.__ask_value(prompt=f"{option}: ", required_type=required_type)
+            self.__write_value_to_config(section, option, str(value))
+        return value
+
+    def get_optional_value(self, section: str, option: str, required_type=str):
         try:
-            variable = self.config.get(section, option).strip()
-            if not variable:
+            value = self.CONFIG.get(section, option).strip()
+            if not value:
                 raise configparser.NoOptionError(section=section, option=option)
-            return required_type(variable)
+            return required_type(value)
         except (configparser.NoSectionError, configparser.NoOptionError, ValueError):
-            variable = None
-            while variable is None:
-                try:
-                    variable = required_type(input(f"{option}: "))
-                except ValueError:
-                    print(f" >>> Value should be '{required_type}'")
-                    variable = None
-            self.__write_value(section, option, str(variable))
-        return variable
+            return None
 
-    def get_optional_value(self, section: str, option: str) -> str | None:
-        try:
-            variable = self.config.get(section, option).strip()
-        except (configparser.NoSectionError, configparser.NoOptionError):
-            variable = None
-        return variable
+    def __ask_value(self, prompt: str, required_type=str):
+        while True:
+            try:
+                return required_type(input(prompt))
+            except ValueError:
+                print(f" >>> Value should be '{required_type}'")
 
-    def __write_value(self, section: str, option: str, value: str):
-        sections = self.config.sections()
+    def __write_value_to_config(self, section: str, option: str, value: str):
+        sections = self.CONFIG.sections()
         if section not in sections:
-            self.config.add_section(section)
-        self.config.set(section, option, value)
-        with open(file=self.config_path, mode="w", encoding="UTF-8") as c:
-            self.config.write(c)
+            self.CONFIG.add_section(section)
+        self.CONFIG.set(section, option, value)
+        with open(file=self.CONFIG_PATH, mode="w", encoding="UTF-8") as c:
+            self.CONFIG.write(c)
