@@ -4,11 +4,9 @@ import paramiko
 from sspd.config_file import ConfigFile
 from sspd.ignoring_file import IgnoreFile
 import logging
-from settings import LOGGER_NAME
 
 
 logging.getLogger("paramiko").setLevel(logging.WARNING)
-LOGGER = logging.getLogger(f'{LOGGER_NAME}.SSH_ProjectDelivery')
 
 
 def close_connections():
@@ -25,7 +23,7 @@ def close_connections():
 
 def exception(text: str):
     close_connections()
-    print("SSH_ProjectDelivery-Exception:", text)
+    print("SSPD-Exception:", text)
     input("Press ENTER...")
     os.abort()
 
@@ -68,7 +66,7 @@ SSH_REMOTE_MACHINE = paramiko.SSHClient()
 SSH_REMOTE_MACHINE.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 try:
     # Подключаемся к серверу
-    # TODO: add comments everywhere in SSH_ProjectDelivery (just for future MF)
+    # TODO: add comments everywhere in SSPD (just for future MF)
     SSH_REMOTE_MACHINE.connect(
         hostname=REMOTE_IPV4,
         username=REMOTE_USERNAME,
@@ -126,11 +124,11 @@ ExecStart={REMOTE_PROJECT_PATH}/{REMOTE_VENV_DIR_NAME}/bin/python3 {REMOTE_PROJE
 
 [Install]
 WantedBy=multi-user.target"""
-    service_filename_created_by_ssh_project_delivery = "Service_CreatedBy_SSH_ProjectDelivery.service"
-    with open(service_filename_created_by_ssh_project_delivery, "w") as default_service_file:
+    service_filename_created_by_sspd = "Service_CreatedBy_SSPD.service"
+    with open(service_filename_created_by_sspd, "w") as default_service_file:
         default_service_file.write(default_service_script)
-    with open(service_filename_created_by_ssh_project_delivery, "rb") as default_service_file:
+    with open(service_filename_created_by_sspd, "rb") as default_service_file:
         SFTP_REMOTE_MACHINE.putfo(default_service_file, REMOTE_PATH_TO_SERVICES_DIR + REMOTE_SERVICE_FILENAME)
     SSH_REMOTE_MACHINE.exec_command('sudo systemctl daemon-reload')
     SSH_REMOTE_MACHINE.exec_command(f'sudo systemctl enable {REMOTE_SERVICE_FILENAME}')
-    print(f"You can look created service file in '{os.path.join(os.getcwd(), service_filename_created_by_ssh_project_delivery)}'")
+    print(f"You can look created service file in '{os.path.join(os.getcwd(), service_filename_created_by_sspd)}'")

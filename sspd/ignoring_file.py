@@ -13,8 +13,8 @@ class IgnoreFile:
 
     example_of_default_files_to_ignore = f"""
 {sign2ignore_line_in_ignoring_file} For example:
-ssh_project_delivery{sign2note_that_system_should_ignore_all_folder}
-ssh_project_delivery.py
+sspd{sign2note_that_system_should_ignore_all_folder}
+ssh_scp_project_delivery.py
 .git{sign2note_that_system_should_ignore_all_folder}
 .gitignore
 playground.py
