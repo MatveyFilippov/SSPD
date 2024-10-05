@@ -1,5 +1,16 @@
 import os
-from sspd.__misc import split_filepath
+import re
+
+
+def split_filepath(filepath: str) -> list[str]:
+    parts = re.split(r'(/|\\)+', filepath)
+    result = []
+    for part in parts:
+        part = part.strip()
+        if not part or part.count("/") or part.count("\\"):
+            continue
+        result.append(part.strip())
+    return result
 
 
 class IgnKeyChars:
@@ -69,7 +80,7 @@ class IgnoreFile:
     def files2ignore(self) -> set[str]:
         if not self.__files2ignore:
             self.update_files2ignore()
-        return self.__files2ignore
+        return self.__files2ignore.copy()
 
     def update_files2ignore(self):
         self.__files2ignore = set()

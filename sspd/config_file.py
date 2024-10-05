@@ -1,5 +1,5 @@
 import configparser
-import os.path
+import os
 
 
 class ConfigFile:
