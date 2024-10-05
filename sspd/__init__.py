@@ -1,8 +1,8 @@
 import os
 from time import sleep
 import paramiko
-from sspd.config_file import ConfigFile
-from sspd.ignoring_file import IgnoreFile
+from sspd.__config_file import ConfigFile
+from sspd.__ignoring_file import IgnoreFile
 import logging
 
 
