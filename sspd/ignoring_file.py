@@ -73,6 +73,7 @@ class IgnoreFile:
         self.PROJECT_DIR_PATH = project_path
 
         self.__files2ignore = None
+        self.__absolute_filepaths2ignore = None
         self.__markers: set[str] = set()
         self.__split_paths: list[list[str]] = []
 
@@ -81,6 +82,12 @@ class IgnoreFile:
         if not self.__files2ignore:
             self.update_files2ignore()
         return self.__files2ignore.copy()
+
+    @property
+    def absolute_filepaths2ignore(self) -> set[str]:
+        if not self.__absolute_filepaths2ignore:
+            self.update_absolute_filepaths2ignore()
+        return self.__absolute_filepaths2ignore.copy()
 
     def update_files2ignore(self):
         self.__files2ignore = set()
@@ -94,10 +101,10 @@ class IgnoreFile:
                     self.__new_filepath(line)
             else:
                 while line.endswith("/") or line.endswith("\\"):
-                    line = line[:1]
+                    line = line.removesuffix("/").removesuffix("\\")
                 self.__markers.add(line)
         self.__update_split_paths_using_markers()
-        self.__export_absolute_filepaths()
+        self.__set_filepaths_from_split_paths()
 
     def __iter_ign_file_lines(self, skip_comment_lines=False) -> str:
         with open(self.IGNORE_FILEPATH, "r") as file:
@@ -123,16 +130,18 @@ class IgnoreFile:
         self.__split_paths.append(split_filepath(filepath))
 
     def __new_folderpath(self, folderpath: str):
+        while folderpath.startswith("/"):
+            folderpath = folderpath.removeprefix("/")
         for root, dirs, files in os.walk(os.path.join(self.PROJECT_DIR_PATH, folderpath)):
             for file in files:
                 filepath = os.path.join(root, file).replace(self.PROJECT_DIR_PATH, "")
                 self.__new_filepath(filepath)
 
-    def __export_absolute_filepaths(self):
+    def __set_filepaths_from_split_paths(self):
         for split_path in self.__split_paths:
-            self.__files2ignore.add(
-                os.path.join(
-                    self.PROJECT_DIR_PATH,
-                    os.path.sep.join(split_path)
-                )
-            )
+            self.__files2ignore.add(os.path.sep.join(split_path))
+
+    def update_absolute_filepaths2ignore(self):
+        self.__absolute_filepaths2ignore.add(
+            os.path.join(self.PROJECT_DIR_PATH, filename) for filename in self.files2ignore
+        )
