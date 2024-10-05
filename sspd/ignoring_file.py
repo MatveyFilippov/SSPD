@@ -28,12 +28,12 @@ DESCRIPTION_SSPD_IGN = f"""{IgnKeyChars.comment_line_startswith} Put here files 
 {IgnKeyChars.comment_line_startswith} If line don't starts with any keys system will take it as 'marker' to ignore...
 {IgnKeyChars.comment_line_startswith} ... if filepath (split by `/` or `\\`) contains 'marker' --- system will ignore it"""
 
-DEFAULT_SSPD_IGN_CONTENT = f"""
-{IgnKeyChars.comment_line_startswith} For example:
+DEFAULT_SSPD_IGN_CONTENT = f"""{IgnKeyChars.comment_line_startswith} For example:
 sspd{IgnKeyChars.folder_endswith}
 ssh_scp_project_delivery.py
 {IgnKeyChars.filepath_startswith}.git{IgnKeyChars.folder_endswith}
 .gitignore
+SSPD_DefaultServiceFileCreatedInRemoteMachine.service
 {IgnKeyChars.filepath_startswith}playground.py
 venv{IgnKeyChars.folder_endswith}
 .idea{IgnKeyChars.folder_endswith}
@@ -48,11 +48,11 @@ def init_default_ignore_file(filepath: str):
         file.write(DESCRIPTION_SSPD_IGN)
     print(f"File '{os.path.join('...', os.path.sep+filepath)}' is clean. Do you want to ignore any files?")
     sign2continue = "No"
-    user_decision = input(f"Enter (to break process and fill ign file) / '{sign2continue}' (to continue without ignoring): ")
+    user_decision = input(f"ENTER (to break process and fill ign file) / '{sign2continue}' (to continue without ignoring): ")
     if user_decision.strip() == sign2continue:
         return
     with open(filepath, 'a+', encoding="UTF-8") as file:
-        file.write(DEFAULT_SSPD_IGN_CONTENT)
+        file.write("\n\n"+DEFAULT_SSPD_IGN_CONTENT)
     os.abort()
 
 
