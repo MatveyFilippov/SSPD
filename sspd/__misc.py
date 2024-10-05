@@ -1,4 +1,5 @@
 import hashlib
+import re
 
 
 def get_checksum(data: str | bytes) -> str:
@@ -36,14 +37,19 @@ def get_file_path_from_dir(from_dir_path: str, file_path: str) -> list[str]:
     result_path = file_path.replace(from_dir_path, "")
     while result_path.startswith("/") or result_path.startswith("\\"):
         result_path = result_path[1:]
-    if "/" in result_path:
-        result = result_path.split("/")
-    elif "\\" in result_path:
-        result = result_path.split("\\")
-    else:
-        result = [result_path]
-    return result
+    return split_filepath(result_path)
 
 
 def is_files_different(local: bytes, remote: bytes) -> bool:
     return get_checksum(local) != get_checksum(remote)
+
+
+def split_filepath(filepath: str) -> list[str]:
+    parts = re.split(r'(/|\\)+', filepath)
+    result = []
+    for part in parts:
+        part = part.strip()
+        if not part or part.count("/") or part.count("\\"):
+            continue
+        result.append(part.strip())
+    return result
