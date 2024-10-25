@@ -9,7 +9,7 @@ from sspd import __misc, file_analysing
 def execute_remote_command(command: str, print_request=False, print_response=False,
                            ignore_error=False, in_dir: str | None = None) -> tuple[int, str]:
     if in_dir:
-        command = f"cd {in_dir} && command"
+        command = f"cd {in_dir} && {command}"
     if print_request:
         __misc.print_request(command)
     _, stdout, stderr = sspd.SSH_REMOTE_MACHINE.exec_command(command)
@@ -79,7 +79,7 @@ def run_reinstalling_remote_requirements():
 
 def update_remote_code():
     print("Start updating remote code")
-    file_analysing_obj = file_analysing.FileAnalysing(
+    file_analysing_obj = file_analysing.FileAnalysing(  # TODO: Set here files to ignore (не смотреть файлы которые локально игнорируются)
         sspd.LOCAL_PROJECT_DIR_PATH, sspd.REMOTE_PROJECT_DIR_PATH, sspd.REMOTE_VENV_DIR_NAME,
     )
     print("Look differences in local and remote files")
