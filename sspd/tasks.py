@@ -1,6 +1,6 @@
 import os
 import sspd
-from sspd import __misc, file_analysing
+from sspd import __misc, file_analysing, __check_before_start
 
 
 # TODO: here is a lot of print --- make it as param echo=True & add log_echo=False
@@ -31,6 +31,26 @@ def execute_remote_command(command: str, print_request=False, print_response=Fal
     return 0, response
 
 
+def download_file_from_remote_server(remote_filepath: str, local_filepath: str):
+    __misc.print_request(f"Downloading '{remote_filepath}' to '{local_filepath}'")
+    try:
+        with open(local_filepath, "wb") as file:
+            try:
+                sspd.SFTP_REMOTE_MACHINE.getfo(remote_filepath, file)
+            except FileNotFoundError:
+                sspd.exception(f"No such file '{remote_filepath}' in remote machine")
+        __misc.print_response("Success")
+    except FileNotFoundError:
+        sspd.exception(f"Can't write '{local_filepath}' in local machine")
+
+
+def download_log_file():
+    if __check_before_start.is_download_log_file_available():
+        download_file_from_remote_server(
+            remote_filepath=sspd.REMOTE_LOG_FILE_PATH, local_filepath=sspd.LOCAL_LOG_FILE_PATH_TO_DOWNLOAD_IN,
+        )
+
+
 def send_file_to_remote_server(local_filepath: str, remote_filepath: str):
     try:
         __misc.print_request(f"Sending '{local_filepath}' to '{remote_filepath}'")
@@ -38,7 +58,7 @@ def send_file_to_remote_server(local_filepath: str, remote_filepath: str):
             sspd.SFTP_REMOTE_MACHINE.putfo(file, remote_filepath)
         __misc.print_response("Success")
     except FileNotFoundError:
-        sspd.exception(f"No such file '{local_filepath}' in local dir")
+        sspd.exception(f"No such file '{local_filepath}' in local machine")
 
 
 def send_files_from_project_dir(filenames: set[str]):
