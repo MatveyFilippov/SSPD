@@ -19,7 +19,7 @@ def execute_remote_command(command: str, print_request=False, print_response=Fal
             __misc.print_response(er_text)
         else:
             if not ignore_error:
-                sspd.exception(er_text)
+                raise sspd.SSPDException(er_text)
             if print_response:
                 __misc.print_response(er_text)
             return -1, er_text
@@ -38,10 +38,10 @@ def download_file_from_remote_server(remote_filepath: str, local_filepath: str):
             try:
                 sspd.SFTP_REMOTE_MACHINE.getfo(remote_filepath, file)
             except FileNotFoundError:
-                sspd.exception(f"No such file '{remote_filepath}' in remote machine")
+                raise sspd.SSPDException(f"No such file '{remote_filepath}' in remote machine")
         __misc.print_response("Success")
     except FileNotFoundError:
-        sspd.exception(f"Can't write '{local_filepath}' in local machine")
+        raise sspd.SSPDException(f"Can't write '{local_filepath}' in local machine")
 
 
 def download_log_file():
@@ -58,7 +58,7 @@ def send_file_to_remote_server(local_filepath: str, remote_filepath: str):
             sspd.SFTP_REMOTE_MACHINE.putfo(file, remote_filepath)
         __misc.print_response("Success")
     except FileNotFoundError:
-        sspd.exception(f"No such file '{local_filepath}' in local machine")
+        raise sspd.SSPDException(f"No such file '{local_filepath}' in local machine")
 
 
 def send_files_from_project_dir(filenames: set[str]):
@@ -81,7 +81,7 @@ def stop_running_remote_code():
         print("While stop running was unexpected error, do you want to break process?")
         user_decision = input(f"ENTER (to continue) / '{sign2break}' (to break): ").strip()
         if user_decision == sign2break:
-            sspd.exception(response)
+            raise sspd.SSPDException(response)
 
 
 def start_running_remote_code():

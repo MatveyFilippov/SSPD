@@ -1,4 +1,5 @@
 import os
+import sys
 import paramiko
 from sspd import __check_before_start, config_file, ignoring_file
 import logging
@@ -21,11 +22,13 @@ def close_connections():
         pass
 
 
-def exception(text: str):
-    close_connections()
-    print("SSPD-Exception:", text)
-    input("Press ENTER...")
-    os.abort()
+class SSPDException(SystemExit):
+    def __init__(self, text: str):
+        close_connections()
+        print("SSPD-Exception:", text)
+        input("Press ENTER...")
+        sys.exit(0)  # os.abort()
+        # super().__init__(text)
 
 
 # Get SSPD user settings
@@ -73,7 +76,7 @@ try:
         password=PASSWORD_TO_REMOTE_SERVER,
     )
 except paramiko.AuthenticationException:
-    exception("Invalid USERNAME or PASSWORD")
+    SSPDException("Invalid USERNAME or PASSWORD")
 
 # Init SCP
 SFTP_REMOTE_MACHINE = SSH_REMOTE_MACHINE.open_sftp()
