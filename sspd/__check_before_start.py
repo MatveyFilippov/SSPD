@@ -2,7 +2,7 @@ import sspd
 import os
 
 
-def __write_default_service() -> str:
+def __write_default_service() -> str:  # TODO: put service file as superuser (nano M.service -> sudo nano M.service)
     service_filepath_created_by_sspd = os.path.join(
         "sspd", "SSPD_DefaultServiceFileCreatedInRemoteMachine.service"
     )

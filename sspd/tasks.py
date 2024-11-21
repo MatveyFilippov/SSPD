@@ -79,8 +79,8 @@ def run_reinstalling_remote_requirements():
 
 def update_remote_code():
     print("Start updating remote code")
-    file_analysing_obj = file_analysing.FileAnalysing(  # TODO: Set here files to ignore (не смотреть файлы которые локально игнорируются)
-        sspd.LOCAL_PROJECT_DIR_PATH, sspd.REMOTE_PROJECT_DIR_PATH, sspd.REMOTE_VENV_DIR_NAME,
+    file_analysing_obj = file_analysing.FileAnalysing(
+        sspd.LOCAL_PROJECT_DIR_PATH, sspd.REMOTE_PROJECT_DIR_PATH, sspd.REMOTE_VENV_DIR_NAME, *sspd.IGNORE.files2ignore
     )
     print("Look differences in local and remote files")
     files2send = set()

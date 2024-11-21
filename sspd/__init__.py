@@ -5,6 +5,8 @@ import logging
 
 
 logging.getLogger("paramiko").setLevel(logging.WARNING)
+PROPERTIES_DIR = "sspd"
+os.makedirs(PROPERTIES_DIR, exist_ok=True)
 
 
 def close_connections():
@@ -27,7 +29,7 @@ def exception(text: str):
 
 
 # Get SSPD user settings
-config = config_file.ConfigFile(os.path.join("sspd", "ProjectDelivery.ini"))
+config = config_file.ConfigFile(os.path.join(PROPERTIES_DIR, "ProjectDelivery.ini"))
 REMOTE_IPV4 = config.get_required_value(section="RemoteMachine", option="REMOTE_IPV4")
 PASSWORD_TO_REMOTE_SERVER = config.get_required_value(section="RemoteMachine", option="PASSWORD_TO_REMOTE_SERVER")
 REMOTE_USERNAME = config.get_required_value(section="RemoteMachine", option="REMOTE_USERNAME")
@@ -52,7 +54,7 @@ while LOCAL_PROJECT_DIR_PATH.endswith("/"):
 
 # Get filepaths to ignore in SSPD process
 IGNORE = ignoring_file.IgnoreFile(
-    ignore_filepath=os.path.join("sspd", "ProjectDelivery.ign"),
+    ignore_filepath=os.path.join(PROPERTIES_DIR, "ProjectDelivery.ign"),
     project_path=LOCAL_PROJECT_DIR_PATH
 )
 IGNORE.update_files2ignore()
