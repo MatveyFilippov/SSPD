@@ -51,6 +51,8 @@ REMOTE_VENV_DIR_NAME = config.get_required_value(section="RemoteMachine", option
 while REMOTE_VENV_DIR_NAME.startswith("/") or REMOTE_VENV_DIR_NAME.endswith("/"):
     REMOTE_VENV_DIR_NAME = REMOTE_VENV_DIR_NAME.removesuffix("/").removeprefix("/")
 REMOTE_LOG_FILE_PATH = config.get_optional_value(section="RemoteMachine", option="REMOTE_LOG_FILE_PATH")
+if REMOTE_LOG_FILE_PATH:
+    REMOTE_LOG_FILE_PATH = REMOTE_LOG_FILE_PATH.replace("~/", f"/{REMOTE_USERNAME}/")
 LOCAL_LOG_FILE_PATH_TO_DOWNLOAD_IN = config.get_optional_value(section="LocalMachine", option="LOCAL_LOG_FILE_PATH_TO_DOWNLOAD_IN")
 LOCAL_PROJECT_DIR_PATH = config.get_required_value(section="LocalMachine", option="LOCAL_PROJECT_DIR_PATH")
 while LOCAL_PROJECT_DIR_PATH.endswith("/"):

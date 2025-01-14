@@ -82,7 +82,7 @@ def is_download_log_file_available() -> bool:
     if not sspd.REMOTE_LOG_FILE_PATH:
         sspd.REMOTE_LOG_FILE_PATH = sspd.config.get_required_value(
             section="RemoteMachine", option="REMOTE_LOG_FILE_PATH"
-        )
+        ).replace("~/", f"/{sspd.REMOTE_USERNAME}/")
     if not sspd.LOCAL_LOG_FILE_PATH_TO_DOWNLOAD_IN:
         sspd.LOCAL_LOG_FILE_PATH_TO_DOWNLOAD_IN = sspd.config.get_required_value(
             section="LocalMachine", option="LOCAL_LOG_FILE_PATH_TO_DOWNLOAD_IN"
