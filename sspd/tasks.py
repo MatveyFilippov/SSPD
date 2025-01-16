@@ -89,6 +89,13 @@ def start_running_remote_code():
     execute_remote_command(f"sudo systemctl start {sspd.REMOTE_SERVICE_FILENAME}", print_response=True)
 
 
+def restart_running_remote_code():
+    __misc.print_request("Reload daemons")
+    execute_remote_command(f"sudo systemctl daemon-reload", print_response=True)
+    __misc.print_request("Restart running remote py code")
+    execute_remote_command(f"sudo systemctl restart {sspd.REMOTE_SERVICE_FILENAME}", print_response=True)
+
+
 def run_reinstalling_remote_requirements():
     __misc.print_request(f"Try to reinstall requirements in remote '{sspd.REMOTE_VENV_DIR_NAME}'")
     execute_remote_command(
