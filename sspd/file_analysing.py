@@ -17,11 +17,11 @@ def get_filenames_in_remote_dir(folder_path: str, root_path="", *filenames2ignor
                 result.add(file2add)
             else:
                 result.update(get_filenames_in_remote_dir(
-                    folder_path=remote_absolute_path, root_path=root_path, *filenames2ignore
+                    remote_absolute_path, root_path, *filenames2ignore
                 ))
         return result
     except FileNotFoundError:
-        sspd.exception(f"It isn't a file (not contains '.') or folder in remote project dir '{folder_path}'")
+        raise sspd.SSPDException(f"It isn't a file (not contains '.') or folder in remote project dir '{folder_path}'")
 
 
 def get_filenames_in_local_dir(folder_path: str, *filenames2ignore: str) -> set[str]:

@@ -2,9 +2,9 @@ import sspd
 import os
 
 
-def __write_default_service() -> str:
+def __write_default_service() -> str:  # TODO: put service file as superuser (nano M.service -> sudo nano M.service)
     service_filepath_created_by_sspd = os.path.join(
-        "sspd", "SSPD_DefaultServiceFileCreatedInRemoteMachine.service"
+        sspd.PROPERTIES_DIR, "SSPD_DefaultServiceFileCreatedInRemoteMachine.service"
     )
     with open(service_filepath_created_by_sspd, "w") as default_service_file:
         default_service_file.write(sspd.DEFAULT_SERVICE_FILE_CONTENT)
@@ -20,7 +20,7 @@ def __write_default_service() -> str:
 
 def check_local_project_dir():
     if not (os.path.exists(sspd.LOCAL_PROJECT_DIR_PATH) and os.path.isdir(sspd.LOCAL_PROJECT_DIR_PATH)):
-        sspd.exception(f"Invalid local project folder path ('{sspd.LOCAL_PROJECT_DIR_PATH}')")
+        raise sspd.SSPDException(f"Invalid local project folder path ('{sspd.LOCAL_PROJECT_DIR_PATH}')")
 
 
 def check_remote_project_dir():
@@ -32,7 +32,7 @@ def check_remote_project_dir():
                     f"mkdir -p {sspd.REMOTE_PROJECT_DIR_PATH}"
                 )
             else:
-                sspd.exception(f"No working dir ('{sspd.REMOTE_PROJECT_DIR_PATH}') in remote server")
+                raise sspd.SSPDException(f"No working dir ('{sspd.REMOTE_PROJECT_DIR_PATH}') in remote server")
 
 
 def check_remote_venv():
@@ -48,9 +48,11 @@ def check_remote_venv():
                 )
                 er_text = stderr.read()
                 if er_text:
-                    sspd.exception(er_text)
+                    raise sspd.SSPDException(er_text)
             else:
-                sspd.exception(f"Virtual environment not exists in working dir '{sspd.REMOTE_PROJECT_DIR_PATH}'")
+                raise sspd.SSPDException(
+                    f"Virtual environment not exists in working dir '{sspd.REMOTE_PROJECT_DIR_PATH}'"
+                )
 
 
 def check_remote_service():
@@ -64,7 +66,7 @@ def check_remote_service():
         sign2ignore = "N"
         user_decision = input(f"Can I write default service by myself (y/{sign2ignore}): ")
         if user_decision.strip() == sign2ignore:
-            sspd.exception(er_text)
+            raise sspd.SSPDException(er_text)
         local_service_cope_filepath = __write_default_service()
         print(f"You can look copy of created service file in '{local_service_cope_filepath}'")
     except ValueError:
@@ -74,3 +76,22 @@ def check_remote_service():
         if user_decision.strip() != sign2ignore:
             local_service_cope_filepath = __write_default_service()
             print(f"You can look copy of created service file in '{local_service_cope_filepath}'")
+
+
+def is_download_log_file_available() -> bool:
+    if not sspd.REMOTE_LOG_FILE_PATH:
+        sspd.REMOTE_LOG_FILE_PATH = sspd.config.get_required_value(
+            section="RemoteMachine", option="REMOTE_LOG_FILE_PATH"
+        ).replace("~/", f"/{sspd.REMOTE_USERNAME}/")
+    if not sspd.LOCAL_LOG_FILE_PATH_TO_DOWNLOAD_IN:
+        sspd.LOCAL_LOG_FILE_PATH_TO_DOWNLOAD_IN = sspd.config.get_required_value(
+            section="LocalMachine", option="LOCAL_LOG_FILE_PATH_TO_DOWNLOAD_IN"
+        )
+    if not os.path.exists(sspd.LOCAL_LOG_FILE_PATH_TO_DOWNLOAD_IN):
+        os.makedirs(os.path.dirname(sspd.LOCAL_LOG_FILE_PATH_TO_DOWNLOAD_IN), exist_ok=True)
+    else:
+        print(f"File '{sspd.LOCAL_LOG_FILE_PATH_TO_DOWNLOAD_IN}' already exists")
+        sign2continue = "Y"
+        if input(f"Can I rewrite it ({sign2continue}/n): ").strip() != sign2continue:
+            return False
+    return True

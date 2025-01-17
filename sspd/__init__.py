@@ -1,10 +1,13 @@
 import os
+import sys
 import paramiko
 from sspd import __check_before_start, config_file, ignoring_file
 import logging
 
 
 logging.getLogger("paramiko").setLevel(logging.WARNING)
+PROPERTIES_DIR = "sspd"
+os.makedirs(PROPERTIES_DIR, exist_ok=True)
 
 
 def close_connections():
@@ -19,15 +22,17 @@ def close_connections():
         pass
 
 
-def exception(text: str):
-    close_connections()
-    print("SSPD-Exception:", text)
-    input("Press ENTER...")
-    os.abort()
+class SSPDException(SystemExit):
+    def __init__(self, text: str):
+        close_connections()
+        print("SSPD-Exception:", text)
+        input("Press ENTER...")
+        sys.exit(0)  # os.abort()
+        # super().__init__(text)
 
 
 # Get SSPD user settings
-config = config_file.ConfigFile(os.path.join("sspd", "ProjectDelivery.ini"))
+config = config_file.ConfigFile(os.path.join(PROPERTIES_DIR, "ProjectDelivery.ini"))
 REMOTE_IPV4 = config.get_required_value(section="RemoteMachine", option="REMOTE_IPV4")
 PASSWORD_TO_REMOTE_SERVER = config.get_required_value(section="RemoteMachine", option="PASSWORD_TO_REMOTE_SERVER")
 REMOTE_USERNAME = config.get_required_value(section="RemoteMachine", option="REMOTE_USERNAME")
@@ -45,6 +50,10 @@ REMOTE_PROJECT_FILE_TO_RUN = config.get_required_value(section="RemoteMachine", 
 REMOTE_VENV_DIR_NAME = config.get_required_value(section="RemoteMachine", option="REMOTE_VENV_DIR_NAME")
 while REMOTE_VENV_DIR_NAME.startswith("/") or REMOTE_VENV_DIR_NAME.endswith("/"):
     REMOTE_VENV_DIR_NAME = REMOTE_VENV_DIR_NAME.removesuffix("/").removeprefix("/")
+REMOTE_LOG_FILE_PATH = config.get_optional_value(section="RemoteMachine", option="REMOTE_LOG_FILE_PATH")
+if REMOTE_LOG_FILE_PATH:
+    REMOTE_LOG_FILE_PATH = REMOTE_LOG_FILE_PATH.replace("~/", f"/{REMOTE_USERNAME}/")
+LOCAL_LOG_FILE_PATH_TO_DOWNLOAD_IN = config.get_optional_value(section="LocalMachine", option="LOCAL_LOG_FILE_PATH_TO_DOWNLOAD_IN")
 LOCAL_PROJECT_DIR_PATH = config.get_required_value(section="LocalMachine", option="LOCAL_PROJECT_DIR_PATH")
 while LOCAL_PROJECT_DIR_PATH.endswith("/"):
     LOCAL_PROJECT_DIR_PATH = LOCAL_PROJECT_DIR_PATH.removesuffix("/")
@@ -52,7 +61,7 @@ while LOCAL_PROJECT_DIR_PATH.endswith("/"):
 
 # Get filepaths to ignore in SSPD process
 IGNORE = ignoring_file.IgnoreFile(
-    ignore_filepath=os.path.join("sspd", "ProjectDelivery.ign"),
+    ignore_filepath=os.path.join(PROPERTIES_DIR, "ProjectDelivery.ign"),
     project_path=LOCAL_PROJECT_DIR_PATH
 )
 IGNORE.update_files2ignore()
@@ -69,7 +78,7 @@ try:
         password=PASSWORD_TO_REMOTE_SERVER,
     )
 except paramiko.AuthenticationException:
-    exception("Invalid USERNAME or PASSWORD")
+    SSPDException("Invalid USERNAME or PASSWORD")
 
 # Init SCP
 SFTP_REMOTE_MACHINE = SSH_REMOTE_MACHINE.open_sftp()
