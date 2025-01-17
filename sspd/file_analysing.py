@@ -1,12 +1,24 @@
 import os
-import sspd
-from sspd.__misc import is_byte_content_different
+import hashlib
+from . import base, exceptions
+
+
+def get_checksum(data: str | bytes) -> str:
+    if type(data) == str:
+        data = data.encode()
+    checksum = hashlib.md5()
+    checksum.update(data)
+    return checksum.hexdigest()
+
+
+def is_byte_content_different(local: bytes, remote: bytes) -> bool:
+    return get_checksum(local) != get_checksum(remote)
 
 
 def get_filenames_in_remote_dir(folder_path: str, root_path="", *filenames2ignore: str) -> set[str]:
     try:
         result = set()
-        for remote_filename in sspd.SFTP_REMOTE_MACHINE.listdir(folder_path):
+        for remote_filename in base.SFTP_REMOTE_MACHINE.listdir(folder_path):
             if remote_filename in filenames2ignore:
                 continue
             remote_absolute_path = folder_path + "/" + remote_filename
@@ -21,7 +33,7 @@ def get_filenames_in_remote_dir(folder_path: str, root_path="", *filenames2ignor
                 ))
         return result
     except FileNotFoundError:
-        raise sspd.SSPDException(f"It isn't a file (not contains '.') or folder in remote project dir '{folder_path}'")
+        raise exceptions.SSPDException(f"It isn't a file (not contains '.') or folder in remote project dir '{folder_path}'")
 
 
 def get_filenames_in_local_dir(folder_path: str, *filenames2ignore: str) -> set[str]:
@@ -78,7 +90,7 @@ class FileAnalysing:
         try:
             with open(local_filepath, "rb") as local_file:
                 local_file_bytes = local_file.read()
-            with sspd.SFTP_REMOTE_MACHINE.open(remote_filepath, "r") as remote_file:
+            with base.SFTP_REMOTE_MACHINE.open(remote_filepath, "r") as remote_file:
                 remote_file_bytes = remote_file.read()
             return is_byte_content_different(local_file_bytes, remote_file_bytes)
         except UnicodeDecodeError:
