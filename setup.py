@@ -31,3 +31,4 @@ setup(
         "Operating System :: OS Independent"
     ],
 )
+# python3 setup.py sdist bdist_wheel
