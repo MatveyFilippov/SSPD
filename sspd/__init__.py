@@ -1,5 +1,6 @@
 from . import base, tasks
 from . import checker as __checker
+from .base import close_connections
 import logging
 
 
