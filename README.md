@@ -17,7 +17,7 @@ You also have access to specify lib job by using module `sspd.tasks`
 
 ### Quick start
 ```commandline
-pip install git+https://github.com/MatveyFilippov/SSPD.git
+pip install -U git+https://github.com/MatveyFilippov/SSPD.git
 ```
 
 or install old version from [dist](dist)
