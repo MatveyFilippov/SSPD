@@ -1,4 +1,5 @@
 from . import base, tasks
+from .base import close_connections
 from . import checker as __checker
 import logging
 

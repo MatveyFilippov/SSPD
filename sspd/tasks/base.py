@@ -18,7 +18,7 @@ def execute_remote_command(command: str, print_request=False, print_response=Fal
             misc_helpers.print_response(er_text)
         else:
             if not ignore_error:
-                raise exceptions.SSPDException(er_text)
+                raise exceptions.SSPDUnhandlableException(er_text)
             if print_response:
                 misc_helpers.print_response(er_text)
             return -1, er_text
@@ -37,10 +37,10 @@ def download_file_from_remote_server(remote_filepath: str, local_filepath: str):
             try:
                 base.SFTP_REMOTE_MACHINE.getfo(remote_filepath, file)
             except FileNotFoundError:
-                raise exceptions.SSPDException(f"No such file '{remote_filepath}' in remote machine")
+                raise exceptions.SSPDUnhandlableException(f"No such file '{remote_filepath}' in remote machine")
         misc_helpers.print_response("Success")
     except FileNotFoundError:
-        raise exceptions.SSPDException(f"Can't write '{local_filepath}' in local machine")
+        raise exceptions.SSPDUnhandlableException(f"Can't write '{local_filepath}' in local machine")
 
 
 def send_file_to_remote_server(local_filepath: str, remote_filepath: str):
@@ -50,7 +50,7 @@ def send_file_to_remote_server(local_filepath: str, remote_filepath: str):
             base.SFTP_REMOTE_MACHINE.putfo(file, remote_filepath)
         misc_helpers.print_response("Success")
     except FileNotFoundError:
-        raise exceptions.SSPDException(f"No such file '{local_filepath}' in local machine")
+        raise exceptions.SSPDUnhandlableException(f"No such file '{local_filepath}' in local machine")
 
 
 def stop_running_remote_code():
@@ -63,7 +63,7 @@ def stop_running_remote_code():
         print("While stop running was unexpected error, do you want to break process?")
         user_decision = input(f"ENTER (to continue) / '{sign2break}' (to break): ").strip()
         if user_decision == sign2break:
-            raise exceptions.SSPDException(response)
+            raise exceptions.SSPDUnhandlableException(response)
 
 
 def start_running_remote_code():

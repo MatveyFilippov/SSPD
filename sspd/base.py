@@ -4,7 +4,7 @@ from .misc_helpers import config_file, ignoring_file
 from . import exceptions
 
 
-PROPERTIES_DIR = "sspd/RequiredFiles"
+PROPERTIES_DIR = "SSPDFiles"
 os.makedirs(PROPERTIES_DIR, exist_ok=True)
 
 
@@ -55,7 +55,7 @@ try:
         password=PASSWORD_TO_REMOTE_SERVER,
     )
 except paramiko.AuthenticationException:
-    exceptions.SSPDException("Invalid USERNAME or PASSWORD")
+    raise exceptions.SSPDExceptionWithoutClosingConnection("Invalid USERNAME or PASSWORD")
 
 # Init SCP
 SFTP_REMOTE_MACHINE = SSH_REMOTE_MACHINE.open_sftp()
