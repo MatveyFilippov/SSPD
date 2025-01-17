@@ -1,3 +1,19 @@
 [build-system]
 requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "sspd"
+version = "1.2.0"
+description = "SSH/SCP Project Delivery"
+readme = "README.md"
+authors = [
+    { name = "Homer", email = "mdfilippov_2@edu.hse.ru" }
+]
+homepage = "https://github.com/MatveyFilippov/SSPD?tab=readme-ov-file#sspd---sshscp-project-delivery"
+repository = "https://github.com/MatveyFilippov/SSPD"
+classifiers = [
+    "Programming Language :: Python :: 3.11",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent"
+]

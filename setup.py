@@ -7,26 +7,26 @@ def requirements() -> list[str]:
 
 
 def readme() -> str:
-    with open('README.md', 'r') as f:
+    with open("README.md", "r") as f:
         return f.read()
 
 
 setup(
-    name='sspd',
+    name="sspd",
     author="Homer",
     version="1.2.0",
     packages=find_packages(),
     install_requires=requirements(),
-    url='https://github.com/MatveyFilippov/SSPD',
+    url="https://github.com/MatveyFilippov/SSPD?tab=readme-ov-file#sspd---sshscp-project-delivery",
     project_urls={
-        'GitHub': 'https://github.com/MatveyFilippov/SSPD'
+        "GitHub": "https://github.com/MatveyFilippov/SSPD"
     },
-    description='SSH/SCP Project Delivery',
+    description="SSH/SCP Project Delivery",
     long_description=readme(),
-    long_description_content_type='text/markdown',
+    long_description_content_type="text/markdown",
     classifiers=[
-        'Programming Language :: Python :: 3.11',
-        'License :: OSI Approved :: MIT License',
-        'Operating System :: OS Independent'
+        "Programming Language :: Python :: 3.11",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent"
     ],
 )
