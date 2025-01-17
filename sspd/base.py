@@ -4,7 +4,7 @@ from .misc_helpers import config_file, ignoring_file
 from . import exceptions
 
 
-PROPERTIES_DIR = "sspd/RequiredFiles"
+PROPERTIES_DIR = "SSPDFiles"
 os.makedirs(PROPERTIES_DIR, exist_ok=True)
 
 
