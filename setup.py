@@ -14,6 +14,7 @@ def readme() -> str:
 setup(
     name="sspd",
     author="Homer",
+    author_email="mdfilippov_2@edu.hse.ru",
     version="1.2.0",
     packages=find_packages(),
     install_requires=requirements(),

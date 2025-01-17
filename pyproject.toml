@@ -10,8 +10,6 @@ readme = "README.md"
 authors = [
     { name = "Homer", email = "mdfilippov_2@edu.hse.ru" }
 ]
-homepage = "https://github.com/MatveyFilippov/SSPD?tab=readme-ov-file#sspd---sshscp-project-delivery"
-repository = "https://github.com/MatveyFilippov/SSPD"
 classifiers = [
     "Programming Language :: Python :: 3.11",
     "License :: OSI Approved :: MIT License",
