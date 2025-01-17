@@ -1,6 +1,6 @@
 import os
 import hashlib
-from . import base, exceptions
+from sspd import base, exceptions
 
 
 def get_checksum(data: str | bytes) -> str:
@@ -51,42 +51,40 @@ def get_filenames_in_local_dir(folder_path: str, *filenames2ignore: str) -> set[
 
 
 class FileAnalysing:
-    def __init__(self, local_dir: str, remote_dir: str, *filenames2ignore: str):
-        self.LOCAL_DIR_PATH = local_dir
-        self.REMOTE_DIR_PATH = remote_dir
-        self.FILENAMES_TO_IGNORE = filenames2ignore
+    FILENAMES_TO_IGNORE = base.IGNORE.files2ignore
 
-        self.LOCAL_FILES: set[str] = set()
-        self.REMOTE_FILES: set[str] = set()
-        self.__updated_files: set[str] = set()
-        self.__new_files: set[str] = set()
-        self.__deleted_files: set[str] = set()
+    LOCAL_FILES: set[str] = set()
+    REMOTE_FILES: set[str] = set()
 
-        self.refresh()
+    __updated_files: set[str] = set()
+    __new_files: set[str] = set()
+    __deleted_files: set[str] = set()
 
-    def refresh(self):
-        self.LOCAL_FILES = get_filenames_in_local_dir(self.LOCAL_DIR_PATH, *self.FILENAMES_TO_IGNORE)
-        self.REMOTE_FILES = get_filenames_in_remote_dir(
-            self.REMOTE_DIR_PATH, self.REMOTE_DIR_PATH, *self.FILENAMES_TO_IGNORE,
+    @classmethod
+    def refresh(cls):
+        cls.LOCAL_FILES = get_filenames_in_local_dir(base.LOCAL_PROJECT_DIR_PATH, *cls.FILENAMES_TO_IGNORE)
+        cls.REMOTE_FILES = get_filenames_in_remote_dir(
+            base.REMOTE_PROJECT_DIR_PATH, base.REMOTE_PROJECT_DIR_PATH, *cls.FILENAMES_TO_IGNORE,
         )
 
-        self.__updated_files = set()
-        self.__new_files = set()
-        self.__deleted_files = set()
+        cls.__updated_files = set()
+        cls.__new_files = set()
+        cls.__deleted_files = set()
 
-    @property
-    def updated_files(self) -> set[str]:
-        if self.__updated_files:
-            return self.__updated_files.copy()
-        self.__updated_files = set()
-        for filename in self.REMOTE_FILES:
-            if filename in self.LOCAL_FILES and self.__is_file_updated(filename):
-                self.__updated_files.add(filename)
-        return self.__updated_files.copy()
+    @classmethod
+    def get_updated_files(cls) -> set[str]:
+        if cls.__updated_files:
+            return cls.__updated_files.copy()
+        cls.__updated_files = set()
+        for filename in cls.REMOTE_FILES:
+            if filename in cls.LOCAL_FILES and cls.__is_file_updated(filename):
+                cls.__updated_files.add(filename)
+        return cls.__updated_files.copy()
 
-    def __is_file_updated(self, filename: str) -> bool:
-        local_filepath = os.path.join(self.LOCAL_DIR_PATH, filename)
-        remote_filepath = self.REMOTE_DIR_PATH + "/" + filename
+    @classmethod
+    def __is_file_updated(cls, filename: str) -> bool:
+        local_filepath = os.path.join(base.LOCAL_PROJECT_DIR_PATH, filename)
+        remote_filepath = base.REMOTE_PROJECT_DIR_PATH + "/" + filename
         try:
             with open(local_filepath, "rb") as local_file:
                 local_file_bytes = local_file.read()
@@ -96,17 +94,17 @@ class FileAnalysing:
         except UnicodeDecodeError:
             return True
 
-    @property
-    def new_files(self) -> set[str]:
-        if self.__new_files:
-            return self.__new_files.copy()
-        for filename in self.LOCAL_FILES:
-            if filename not in self.REMOTE_FILES:
-                self.__new_files.add(filename)
-        return self.__new_files.copy()
+    @classmethod
+    def get_new_files(cls) -> set[str]:
+        if cls.__new_files:
+            return cls.__new_files.copy()
+        for filename in cls.LOCAL_FILES:
+            if filename not in cls.REMOTE_FILES:
+                cls.__new_files.add(filename)
+        return cls.__new_files.copy()
 
-    @property
-    def deleted_files(self) -> set[str]:
+    @classmethod
+    def get_deleted_files(cls) -> set[str]:
         # TODO: you can look, that remote file not in local files (as in `new_files` but reversed)
         # but here is problem - remote project can create special files, so them will be always deleted
-        return self.__deleted_files.copy()
+        return cls.__deleted_files.copy()

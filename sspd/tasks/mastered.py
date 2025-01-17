@@ -1,6 +1,7 @@
 import os
 from . import base
-from .. import checker, file_analysing, misc_helpers
+from .file_analysing import FileAnalysing
+from .. import checker, misc_helpers
 from .. import base as sspd_properties
 
 
@@ -26,17 +27,16 @@ def send_files_from_project_dir(filenames: set[str]):
 
 def update_remote_code():
     print("Start updating remote code")
-    file_analysing_obj = file_analysing.FileAnalysing(
-        sspd_properties.LOCAL_PROJECT_DIR_PATH, sspd_properties.REMOTE_PROJECT_DIR_PATH, sspd_properties.REMOTE_VENV_DIR_NAME, *sspd_properties.IGNORE.files2ignore
-    )
+    FileAnalysing.FILENAMES_TO_IGNORE.add(sspd_properties.REMOTE_VENV_DIR_NAME)
+    FileAnalysing.refresh()
     print("Look differences in local and remote files")
     files2send = set()
-    for new_file in file_analysing_obj.new_files:
+    for new_file in FileAnalysing.get_new_files():
         if new_file in sspd_properties.IGNORE.files2ignore:
             continue
         files2send.add(new_file)
         print(" * New:", new_file)
-    for updated_file in file_analysing_obj.updated_files:
+    for updated_file in FileAnalysing.get_updated_files():
         if updated_file in sspd_properties.IGNORE.files2ignore:
             continue
         files2send.add(updated_file)
