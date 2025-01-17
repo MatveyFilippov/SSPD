@@ -1,4 +1,5 @@
 import sys
+from .base import close_connections
 
 
 class SSPDException(SystemExit):
@@ -6,5 +7,5 @@ class SSPDException(SystemExit):
         close_connections()
         print("SSPD-Exception:", text)
         input("Press ENTER...")
-        sys.exit(0)  # os.abort()
+        sys.exit(-1)  # os.abort()
         # super().__init__(text)
