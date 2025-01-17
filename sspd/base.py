@@ -78,3 +78,15 @@ ExecStart={REMOTE_PROJECT_DIR_PATH}/{REMOTE_VENV_DIR_NAME}/bin/python3 {REMOTE_P
 
 [Install]
 WantedBy=multi-user.target"""
+
+
+def close_connections():
+    try:
+        objects_to_close = [SSH_REMOTE_MACHINE, SFTP_REMOTE_MACHINE]
+        for object_to_close in objects_to_close:
+            try:
+                object_to_close.close()
+            except Exception:
+                pass
+    except Exception:
+        pass
