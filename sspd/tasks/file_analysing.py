@@ -1,6 +1,6 @@
 import os
 import hashlib
-from sspd import base, exceptions
+from .. import base, exceptions
 
 
 def get_checksum(data: str | bytes) -> str:
