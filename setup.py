@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 def requirements() -> list[str]:
     with open("requirements.txt", "r", encoding="UTF-8") as rf:
-        return [req.removesuffix("\n") for req in rf.readlines()]
+        return rf.read().splitlines()
 
 
 def readme() -> str:
@@ -31,3 +31,4 @@ setup(
         "Operating System :: OS Independent"
     ],
 )
+# python3 setup.py sdist bdist_wheel
