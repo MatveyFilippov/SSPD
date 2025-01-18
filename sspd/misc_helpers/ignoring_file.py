@@ -29,11 +29,10 @@ DESCRIPTION_SSPD_IGN = f"""{IgnKeyChars.comment_line_startswith} Put here files 
 {IgnKeyChars.comment_line_startswith} ... if filepath (split by `/` or `\\`) contains 'marker' --- system will ignore it"""
 
 DEFAULT_SSPD_IGN_CONTENT = f"""{IgnKeyChars.comment_line_startswith} For example:
-sspd{IgnKeyChars.folder_endswith}
+SSPDFiles{IgnKeyChars.folder_endswith}
 ssh_scp_project_delivery.py
 {IgnKeyChars.filepath_startswith}.git{IgnKeyChars.folder_endswith}
 .gitignore
-SSPD_DefaultServiceFileCreatedInRemoteMachine.service
 {IgnKeyChars.filepath_startswith}playground.py
 venv{IgnKeyChars.folder_endswith}
 .idea{IgnKeyChars.folder_endswith}
