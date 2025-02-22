@@ -1,5 +1,5 @@
-from .. import base, exceptions
-from .. import misc_helpers
+import os
+from .. import base, exceptions, misc_helpers, checker
 
 
 # TODO: here is a lot of print --- make it as param echo=True & add log_echo=False
@@ -41,6 +41,17 @@ def download_file_from_remote_server(remote_filepath: str, local_filepath: str):
         misc_helpers.print_response("Success")
     except FileNotFoundError:
         raise exceptions.SSPDUnhandlableException(f"Can't write '{local_filepath}' in local machine")
+
+
+def download_folder_from_remote_server(remote_folderpath: str, local_folderpath: str):
+    os.makedirs(local_folderpath, exist_ok=True)
+    for item in base.SFTP_REMOTE_MACHINE.listdir(remote_folderpath):
+        remote_path = os.path.join(remote_folderpath, item)
+        local_path = os.path.join(local_folderpath, item)
+        if checker.is_remote_dir(remote_path):
+            download_folder_from_remote_server(remote_path, local_path)
+        else:
+            download_file_from_remote_server(remote_path, local_path)
 
 
 def send_file_to_remote_server(local_filepath: str, remote_filepath: str):

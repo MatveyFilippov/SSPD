@@ -73,3 +73,8 @@ def check_remote_service():
         if user_decision.strip() != sign2ignore:
             local_service_cope_filepath = __write_default_service()
             print(f"You can look copy of created service file in '{local_service_cope_filepath}'")
+
+
+def is_remote_dir(path: str) -> bool:
+    _, _, stderr = base.SSH_REMOTE_MACHINE.exec_command(f"cd {path}")
+    return "No such file or directory" in stderr.read().decode()
