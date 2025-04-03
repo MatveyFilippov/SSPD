@@ -1,5 +1,22 @@
 import os
+from stat import S_ISDIR, S_ISREG
 from .. import base, exceptions
+
+
+def is_remote_dir(path: str) -> bool:
+    try:
+        file_attr = base.SFTP_REMOTE_MACHINE.stat(path)
+        return S_ISDIR(file_attr.st_mode)
+    except IOError:
+        return False
+
+
+def is_remote_file(path: str) -> bool:
+    try:
+        file_attr = base.SFTP_REMOTE_MACHINE.stat(path)
+        return S_ISREG(file_attr.st_mode)
+    except IOError:
+        return False
 
 
 def __write_default_service() -> str:  # TODO: put service file as superuser (nano M.service -> sudo nano M.service)
@@ -19,17 +36,12 @@ def __write_default_service() -> str:  # TODO: put service file as superuser (na
 
 
 def check_remote_project_dir():
-    for i in range(2):
-        _, _, stderr = base.SSH_REMOTE_MACHINE.exec_command(f"cd {base.REMOTE_PROJECT_DIR_PATH}")
-        if "No such file or directory" in stderr.read().decode():
-            if i == 0:
-                base.SSH_REMOTE_MACHINE.exec_command(
-                    f"mkdir -p {base.REMOTE_PROJECT_DIR_PATH}"
-                )
-            else:
-                raise exceptions.SSPDUnhandlableException(
-                    f"No working dir ('{base.REMOTE_PROJECT_DIR_PATH}') in remote server"
-                )
+    if not is_remote_dir(base.REMOTE_PROJECT_DIR_PATH):
+        base.SSH_REMOTE_MACHINE.exec_command(f"mkdir -p {base.REMOTE_PROJECT_DIR_PATH}")
+        if not is_remote_dir(base.REMOTE_PROJECT_DIR_PATH):
+            raise exceptions.SSPDUnhandlableException(
+                f"No working dir ('{base.REMOTE_PROJECT_DIR_PATH}') in remote server"
+            )
 
 
 def check_remote_venv():
@@ -73,8 +85,3 @@ def check_remote_service():
         if user_decision.strip() != sign2ignore:
             local_service_cope_filepath = __write_default_service()
             print(f"You can look copy of created service file in '{local_service_cope_filepath}'")
-
-
-def is_remote_dir(path: str) -> bool:
-    _, _, stderr = base.SSH_REMOTE_MACHINE.exec_command(f"cd {path}")
-    return "No such file or directory" in stderr.read().decode()
