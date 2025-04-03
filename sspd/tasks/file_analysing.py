@@ -1,6 +1,6 @@
 import os
 import hashlib
-from .. import base, exceptions
+from .. import base, exceptions, checker
 
 
 def get_checksum(data: str | bytes) -> str:
@@ -22,15 +22,17 @@ def get_filenames_in_remote_dir(folder_path: str, root_path="", *filenames2ignor
             if remote_filename in filenames2ignore:
                 continue
             remote_absolute_path = folder_path + "/" + remote_filename
-            if remote_filename.count("."):
-                file2add = remote_absolute_path.replace(f"{root_path}/", "")
-                while file2add.startswith("/"):
-                    file2add.removeprefix("/")
-                result.add(file2add)
-            else:
+            if checker.is_remote_dir(remote_absolute_path):
                 result.update(get_filenames_in_remote_dir(
                     remote_absolute_path, root_path, *filenames2ignore
                 ))
+            else:
+                file2add = remote_absolute_path.replace(f"{root_path}/", "")
+                while file2add.startswith("/"):
+                    file2add.removeprefix("/")
+                if file2add in filenames2ignore:
+                    continue
+                result.add(file2add)
         return result
     except FileNotFoundError:
         raise exceptions.SSPDUnhandlableException(
@@ -48,6 +50,8 @@ def get_filenames_in_local_dir(folder_path: str, *filenames2ignore: str) -> set[
             file2add = local_absolute_path.replace(f"{folder_path}/", "")
             while file2add.startswith("/"):
                 file2add.removeprefix("/")
+            if file2add in filenames2ignore:
+                continue
             result.add(file2add)
     return result
 
@@ -64,7 +68,9 @@ class FileAnalysing:
 
     @classmethod
     def refresh(cls):
-        cls.LOCAL_FILES = get_filenames_in_local_dir(base.LOCAL_PROJECT_DIR_PATH, *cls.FILENAMES_TO_IGNORE)
+        cls.LOCAL_FILES = get_filenames_in_local_dir(
+            base.LOCAL_PROJECT_DIR_PATH, *cls.FILENAMES_TO_IGNORE,
+        )
         cls.REMOTE_FILES = get_filenames_in_remote_dir(
             base.REMOTE_PROJECT_DIR_PATH, base.REMOTE_PROJECT_DIR_PATH, *cls.FILENAMES_TO_IGNORE,
         )
