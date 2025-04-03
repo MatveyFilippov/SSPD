@@ -6,3 +6,4 @@ from .base import (
 from .mastered import (
     download_log_file, update_remote_code, send_files_from_project_dir
 )
+from .file_analysing import FileAnalysing
