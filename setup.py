@@ -15,7 +15,7 @@ setup(
     name="sspd",
     author="Homer",
     author_email="mdfilippov_2@edu.hse.ru",
-    version="1.2.0",
+    version="1.3.0",
     packages=find_packages(),
     install_requires=requirements(),
     url="https://github.com/MatveyFilippov/SSPD?tab=readme-ov-file#sspd---sshscp-project-delivery",

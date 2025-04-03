@@ -1,10 +1,11 @@
 from . import base, tasks
 from .base import close_connections
+from .checker import is_remote_file, is_remote_dir
 from . import checker as __checker
-import logging
+import logging as __logging
 
 
-logging.getLogger("paramiko").setLevel(logging.WARNING)
+__logging.getLogger("paramiko").setLevel(__logging.WARNING)
 
 
 __checker.check_local_project_dir()
