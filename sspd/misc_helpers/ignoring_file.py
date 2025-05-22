@@ -19,14 +19,13 @@ class IgnKeyChars:
     filepath_startswith = "/"
 
 
-DESCRIPTION_SSPD_IGN = f"""{IgnKeyChars.comment_line_startswith} Put here files & folders that you want to ignore in ssh/scp project delivering process
-{IgnKeyChars.comment_line_startswith} System will work with files in local project folder that you put in config
-{IgnKeyChars.comment_line_startswith} Supported keys:
-{IgnKeyChars.comment_line_startswith} Line starts with '{IgnKeyChars.comment_line_startswith}' is comment - system won't look them
-{IgnKeyChars.comment_line_startswith} Line ends with '{IgnKeyChars.folder_endswith}' is folder - system will ignore all files in this dir
-{IgnKeyChars.comment_line_startswith} Line starts with '{IgnKeyChars.filepath_startswith}' is final filepath/folderpath
-{IgnKeyChars.comment_line_startswith} If line don't starts with any keys system will take it as 'marker' to ignore...
-{IgnKeyChars.comment_line_startswith} ... if filepath (split by `/` or `\\`) contains 'marker' --- system will ignore it"""
+DESCRIPTION_SSPD_IGN = f"""{IgnKeyChars.comment_line_startswith} List files and folders to ignore during SSH/SCP project delivery
+{IgnKeyChars.comment_line_startswith} The system will only work with files in the local project folder specified in config
+{IgnKeyChars.comment_line_startswith} Supported patterns:
+{IgnKeyChars.comment_line_startswith} - Lines starting with '{IgnKeyChars.comment_line_startswith}' are comments and will be ignored
+{IgnKeyChars.comment_line_startswith} - Lines ending with '{IgnKeyChars.folder_endswith}' indicate folders - all files within will be ignored
+{IgnKeyChars.comment_line_startswith} - Lines starting with '{IgnKeyChars.filepath_startswith}' represent absolute file or folder paths to ignore
+{IgnKeyChars.comment_line_startswith} - Other lines are treated as keywords - any filepath containing the keyword (when split by '/' or '\\') will be ignored"""
 
 DEFAULT_SSPD_IGN_CONTENT = f"""{IgnKeyChars.comment_line_startswith} For example:
 {IgnKeyChars.filepath_startswith}SSPDFiles{IgnKeyChars.folder_endswith}
