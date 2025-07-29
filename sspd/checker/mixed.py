@@ -1,15 +1,15 @@
-import os
 from .. import base
+import os
 
 
 def is_download_log_file_available() -> bool:
     if not base.REMOTE_LOG_FILE_PATH:
         base.REMOTE_LOG_FILE_PATH = base.tilda_replacer(base.config.get_required_value(
-            section="RemoteMachine", option="REMOTE_LOG_FILE_PATH"
+            section="RemoteMachine", option="REMOTE_LOG_FILE_PATH",
         ))
     if not base.LOCAL_LOG_FILE_PATH_TO_DOWNLOAD_IN:
         base.LOCAL_LOG_FILE_PATH_TO_DOWNLOAD_IN = base.config.get_required_value(
-            section="LocalMachine", option="LOCAL_LOG_FILE_PATH_TO_DOWNLOAD_IN"
+            section="LocalMachine", option="LOCAL_LOG_FILE_PATH_TO_DOWNLOAD_IN",
         )
     if not os.path.exists(base.LOCAL_LOG_FILE_PATH_TO_DOWNLOAD_IN):
         os.makedirs(os.path.dirname(base.LOCAL_LOG_FILE_PATH_TO_DOWNLOAD_IN), exist_ok=True)

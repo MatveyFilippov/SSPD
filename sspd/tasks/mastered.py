@@ -1,8 +1,7 @@
-import os
 from . import base
 from .file_analysing import FileAnalysing
-from .. import checker, misc_helpers
-from .. import base as sspd_properties
+from .. import base as sspd_properties, checker, misc_helpers
+import os
 
 
 # TODO: here is a lot of print --- make it as param echo=True & add log_echo=False

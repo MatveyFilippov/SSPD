@@ -1,5 +1,6 @@
 import configparser
 import os
+from typing import Type
 
 
 class ConfigFile:
@@ -13,14 +14,14 @@ class ConfigFile:
                 self.CONFIG.write(c)
         self.CONFIG_PATH = config_path
 
-    def get_required_value(self, section: str, option: str, required_type=str):
+    def get_required_value(self, section: str, option: str, required_type: Type | None = str):
         value = self.get_optional_value(section=section, option=option, required_type=required_type)
         if value is None:
             value = self.__ask_value(prompt=f"{option}: ", required_type=required_type)
             self.__write_value_to_config(section, option, str(value))
         return value
 
-    def get_optional_value(self, section: str, option: str, required_type=str):
+    def get_optional_value(self, section: str, option: str, required_type: Type | None = str):
         try:
             value = self.CONFIG.get(section, option).strip()
             if not value:
@@ -29,7 +30,7 @@ class ConfigFile:
         except (configparser.NoSectionError, configparser.NoOptionError, ValueError):
             return None
 
-    def __ask_value(self, prompt: str, required_type=str):
+    def __ask_value(self, prompt: str, required_type: Type | None = str):
         while True:
             try:
                 return required_type(input(prompt))

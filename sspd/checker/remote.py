@@ -1,6 +1,6 @@
+from .. import base, exceptions
 import os
 from stat import S_ISDIR, S_ISREG
-from .. import base, exceptions
 
 
 def is_remote_dir(path: str) -> bool:

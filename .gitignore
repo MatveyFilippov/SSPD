@@ -1,8 +1,7 @@
+/venv/
 .idea/
 __pycache__/
 .DS_Store
 /playground.py
-/sspd/ProjectDelivery.ign
 /build/
 /sspd.egg-info/
-/SSPDFiles/

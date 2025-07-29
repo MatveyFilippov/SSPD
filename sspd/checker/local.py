@@ -1,5 +1,5 @@
-import os
 from .. import base, exceptions
+import os
 
 
 def check_local_project_dir():
