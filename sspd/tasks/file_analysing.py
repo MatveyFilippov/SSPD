@@ -35,7 +35,7 @@ def get_filenames_in_remote_dir(folder_path: str, source_folder_path: str, *file
                 result.add(file2add)
         return result
     except FileNotFoundError:
-        raise exceptions.SSPDUnhandlableException(
+        raise exceptions.SSPDUnhandleableException(
             f"It isn't a file (not contains '.') or folder in remote project dir '{folder_path}'"
         )
 

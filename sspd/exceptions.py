@@ -6,7 +6,7 @@ class SSPDExceptionWithoutClosingConnection(Exception):
         super().__init__(text)
 
 
-class SSPDUnhandlableException(SystemExit):
+class SSPDUnhandleableException(SystemExit):
     def __init__(self, text: str):
         from .base import close_connections
         close_connections()

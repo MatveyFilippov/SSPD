@@ -39,7 +39,7 @@ def check_remote_project_dir():
     if not is_remote_dir(base.REMOTE_PROJECT_DIR_PATH):
         base.SSH_REMOTE_MACHINE.exec_command(f"mkdir -p {base.REMOTE_PROJECT_DIR_PATH}")
         if not is_remote_dir(base.REMOTE_PROJECT_DIR_PATH):
-            raise exceptions.SSPDUnhandlableException(
+            raise exceptions.SSPDUnhandleableException(
                 f"No working dir ('{base.REMOTE_PROJECT_DIR_PATH}') in remote server"
             )
 
@@ -57,9 +57,9 @@ def check_remote_venv():
                 )
                 er_text = stderr.read()
                 if er_text:
-                    raise exceptions.SSPDUnhandlableException(er_text)
+                    raise exceptions.SSPDUnhandleableException(er_text)
             else:
-                raise exceptions.SSPDUnhandlableException(
+                raise exceptions.SSPDUnhandleableException(
                     f"Virtual environment not exists in working dir '{base.REMOTE_PROJECT_DIR_PATH}'"
                 )
 
@@ -75,7 +75,7 @@ def check_remote_service():
         sign2ignore = "N"
         user_decision = input(f"Can I write default service by myself (y/{sign2ignore}): ")
         if user_decision.strip() == sign2ignore:
-            raise exceptions.SSPDUnhandlableException(er_text)
+            raise exceptions.SSPDUnhandleableException(er_text)
         local_service_cope_filepath = __write_default_service()
         print(f"You can look copy of created service file in '{local_service_cope_filepath}'")
     except ValueError:
