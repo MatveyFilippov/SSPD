@@ -1,5 +1,5 @@
+from .. import base, checker, exceptions, misc_helpers
 import os
-from .. import base, exceptions, misc_helpers, checker
 
 
 # TODO: here is a lot of print --- make it as param echo=True & add log_echo=False

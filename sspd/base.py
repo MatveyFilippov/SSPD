@@ -1,7 +1,7 @@
-import os
-import paramiko
-from .misc_helpers import config_file, ignoring_file
 from . import exceptions
+from .misc_helpers import config_file, ignoring_file
+import paramiko
+import os
 
 
 PROPERTIES_DIR = "SSPDFiles"

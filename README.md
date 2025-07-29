@@ -41,17 +41,17 @@ pip install -U git+https://github.com/MatveyFilippov/SSPD.git@dev
 SSPD is a rich set of tools that can be used in any way in your program.
 ```python
 import sspd
-from enum import Enum
+from enum import Enum, auto
 from typing import NoReturn
 
 
 class Direction(Enum):
     EXIT = 0
-    UPDATE_CODE = 1
-    DOWNLOAD_LOGS = 2
-    STOP_RUNNING = 3
-    START_RUNNING = 4
-    DELETE_NOT_REQUIRED_DATA = 5
+    UPDATE_CODE = auto()
+    DOWNLOAD_LOGS = auto()
+    STOP_RUNNING = auto()
+    START_RUNNING = auto()
+    DELETE_NOT_REQUIRED_DATA = auto()
 
     @classmethod
     def get_direction(cls) -> 'Direction':

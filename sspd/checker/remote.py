@@ -1,6 +1,6 @@
+from .. import base, exceptions
 import os
 from stat import S_ISDIR, S_ISREG
-from .. import base, exceptions
 
 
 def is_remote_dir(path: str) -> bool:
@@ -31,7 +31,7 @@ def __write_default_service() -> str:  # TODO: put service file as superuser (na
         )
     base.SSH_REMOTE_MACHINE.exec_command("sudo systemctl daemon-reload")
     base.SSH_REMOTE_MACHINE.exec_command(f"sudo systemctl enable {base.REMOTE_SERVICE_FILENAME}")
-    base.SSH_REMOTE_MACHINE.exec_command(f"sudo systemctl start {base.REMOTE_SERVICE_FILENAME}")
+    base.SSH_REMOTE_MACHINE.exec_command("sudo systemctl daemon-reload")
     return service_filepath_created_by_base
 
 
