@@ -19,7 +19,6 @@ You also have access to specify lib job by using module `sspd.tasks`
 ```commandline
 pip install -U git+https://github.com/MatveyFilippov/SSPD.git
 ```
-
 or install old version from [dist](dist)
 
 ```python
@@ -38,6 +37,7 @@ To install dev version (or another branch)
 ```commandline
 pip install -U git+https://github.com/MatveyFilippov/SSPD.git@dev
 ```
+
 SSPD is a rich set of tools that can be used in any way in your program.
 ```python
 import sspd
@@ -48,7 +48,7 @@ from typing import NoReturn
 class Direction(Enum):
     EXIT = 0
     UPDATE_CODE = auto()
-    DOWNLOAD_LOGS = auto()
+    DOWNLOAD_LOG_FILE = auto()
     STOP_RUNNING = auto()
     START_RUNNING = auto()
     DELETE_NOT_REQUIRED_DATA = auto()
@@ -72,12 +72,12 @@ def delete_not_required_data():
     sspd.tasks.stop_running_remote_code()
     sspd.tasks.execute_remote_command(
         command=f"{sspd.base.REMOTE_PROJECT_DIR_PATH}/UserCaches clean",
-        ignore_error=True
+        ignore_error=True,
     )
     sspd.tasks.execute_remote_command(
         command=f"mv new.homer old.homer",
         print_request=True, print_response=True,
-        in_dir="/homer/datas"
+        in_dir="/homer/datas",
     )
     sspd.tasks.start_running_remote_code()
 
@@ -88,7 +88,7 @@ HANDLERS = {
     Direction.DELETE_NOT_REQUIRED_DATA: delete_not_required_data,
     Direction.START_RUNNING: sspd.tasks.start_running_remote_code,
     Direction.STOP_RUNNING: sspd.tasks.stop_running_remote_code,
-    Direction.DOWNLOAD_LOGS: sspd.tasks.download_log_file,
+    Direction.DOWNLOAD_LOG_FILE: sspd.tasks.download_log_file,
 }
 
 
