@@ -1,10 +1,9 @@
 from . import base
 from .file_analysing import FileAnalysing
-from .. import base as sspd_properties, checker, misc_helpers
+from .. import base as sspd_properties, checker
+from ..misc_helpers import io
+from ..misc_helpers.paths import FilePath
 import os
-
-
-# TODO: here is a lot of print --- make it as param echo=True & add log_echo=False
 
 
 def download_log_file():
@@ -15,47 +14,43 @@ def download_log_file():
         )
 
 
-def send_files_from_project_dir(filenames: set[str]):
-    misc_helpers.print_request("Start sending files from local to remote project dir")
-    for filename in filenames:
-        local_filepath = os.path.join(sspd_properties.LOCAL_PROJECT_DIR_PATH, filename)
-        remote_filepath = sspd_properties.REMOTE_PROJECT_DIR_PATH + "/" + filename
+def send_files_from_project_dir(files: set[FilePath]):
+    io.print_info("Start sending files from local to remote project dir")
+    for file in files:
+        local_filepath = file.to_absolute(sspd_properties.LOCAL_PROJECT_DIR_PATH)
+        remote_filepath = file.to_absolute(sspd_properties.REMOTE_PROJECT_DIR_PATH)
         base.execute_remote_command(f"mkdir -p {os.path.dirname(remote_filepath)}")
         base.send_file_to_remote_server(local_filepath, remote_filepath)
-    misc_helpers.print_response("All files are send to remote project dir")
+    io.print_info("All files are send to remote project dir")
 
 
 def update_remote_code():
-    print("Start updating remote code")
-    FileAnalysing.FILENAMES_TO_IGNORE.add(sspd_properties.REMOTE_VENV_DIR_NAME)
+    io.print_info("Start updating remote code")
+
+    io.print_info("Look differences in local and remote files")
     FileAnalysing.refresh()
-    print("Look differences in local and remote files")
+
     files2send = set()
     for new_file in FileAnalysing.get_new_files():
-        if new_file in sspd_properties.IGNORE.files2ignore:
-            continue
         files2send.add(new_file)
-        print(" * New:", new_file)
+        io.print_info(f" * New: {files2send}")
     for updated_file in FileAnalysing.get_updated_files():
-        if updated_file in sspd_properties.IGNORE.files2ignore:
-            continue
         files2send.add(updated_file)
-        print(" * Update:", updated_file)
+        io.print_info(f" * Update: {updated_file}")
     if len(files2send) == 0:
-        print("All files up to date!")
+        io.print_info("All files up to date!")
         return
+
     sign2break = "N"
     user_decision = input(f"Are you sure to send all this files to remote server? (y/{sign2break}): ")
     if user_decision.strip() == sign2break:
-        print("Break process...")
+        io.print_info("Break process...")
         return
-    print()
 
     base.stop_running_remote_code()
     send_files_from_project_dir(files2send)
-    if "requirements.txt" in files2send:
+    if base.REQUIREMENTS_FILE in files2send:
         base.run_reinstalling_remote_requirements()
     base.start_running_remote_code()
-    print()
 
-    print("All is done -> files in remote server are up to date!")
+    io.print_info("All is done -> files in remote server are up to date!")
