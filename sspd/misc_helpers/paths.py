@@ -20,6 +20,7 @@ class FilePath:
         self.__ABSTRACT_PATH = paths_from_project_dir
         self.__JOINED_ABSTRACT = "/".join(self.__ABSTRACT_PATH)
         self.__paths_set: set[str] = set()
+        self.__hash = None
 
     @property
     def abstract(self) -> str:
@@ -34,12 +35,16 @@ class FilePath:
         return iter(self.__ABSTRACT_PATH)
 
     def __hash__(self):
-        return hash(self.__ABSTRACT_PATH)
+        if self.__hash is None:
+            self.__hash = hash(self.__ABSTRACT_PATH)
+        return self.__hash
 
     def __eq__(self, other):
+        if self is other:
+            return True
         if not isinstance(other, FilePath):
             return False
-        return self.__hash__ == other.__hash__
+        return self.__ABSTRACT_PATH == other.__ABSTRACT_PATH
 
     def __str__(self):
         return self.__JOINED_ABSTRACT
