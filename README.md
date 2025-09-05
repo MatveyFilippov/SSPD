@@ -72,11 +72,11 @@ def delete_not_required_data():
     sspd.tasks.stop_running_remote_code()
     sspd.tasks.execute_remote_command(
         command=f"{sspd.base.REMOTE_PROJECT_DIR_PATH}/UserCaches clean",
+        print_request=False, print_response=False,
         ignore_error=True,
     )
     sspd.tasks.execute_remote_command(
         command=f"mv new.homer old.homer",
-        print_request=True, print_response=True,
         in_dir="/homer/datas",
     )
     sspd.tasks.start_running_remote_code()

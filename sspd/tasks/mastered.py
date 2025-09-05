@@ -19,7 +19,9 @@ def send_files_from_project_dir(files: set[FilePath]):
     for file in files:
         local_filepath = file.to_absolute(sspd_properties.LOCAL_PROJECT_DIR_PATH)
         remote_filepath = file.to_absolute(sspd_properties.REMOTE_PROJECT_DIR_PATH)
-        base.execute_remote_command(f"mkdir -p {os.path.dirname(remote_filepath)}")
+        base.execute_remote_command(
+            f"mkdir -p {os.path.dirname(remote_filepath)}", print_request=False, print_response=False,
+        )
         base.send_file_to_remote_server(local_filepath, remote_filepath)
     io.print_info("All files are send to remote project dir")
 
