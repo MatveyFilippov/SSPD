@@ -10,29 +10,30 @@ os.makedirs(PROPERTIES_DIR, exist_ok=True)
 
 # Get SSPD user settings
 config = config_file.ConfigFile(os.path.join(PROPERTIES_DIR, "ProjectDelivery.ini"))
-REMOTE_USERNAME = config.get_required_value(section="RemoteMachine", option="REMOTE_USERNAME")
+REMOTE_USERNAME = config.get_required_value(section="RemoteMachine", option="USERNAME")
 REMOTE_USER_HOME_DIR = f"/{REMOTE_USERNAME}/" if REMOTE_USERNAME == "root" else f"/home/{REMOTE_USERNAME}/"
 tilda_replacer = lambda p: (REMOTE_USER_HOME_DIR + p.removeprefix("~/")) if p.startswith("~/") else p
-REMOTE_IPV4 = config.get_required_value(section="RemoteMachine", option="REMOTE_IPV4")
-PASSWORD_TO_REMOTE_SERVER = config.get_required_value(section="RemoteMachine", option="PASSWORD_TO_REMOTE_SERVER")
-REMOTE_PROJECT_DIR_PATH = tilda_replacer(config.get_required_value(section="RemoteMachine", option="REMOTE_PROJECT_DIR_PATH"))
+REMOTE_MACHINE_HOST = config.get_required_value(section="RemoteMachine", option="HOST")
+REMOTE_MACHINE_PORT = config.get_optional_value(section="RemoteMachine", option="PORT", required_type=int)
+REMOTE_MACHINE_PASSWORD = config.get_required_value(section="RemoteMachine", option="PASSWORD")
+REMOTE_PROJECT_DIR_PATH = tilda_replacer(config.get_required_value(section="RemoteProject", option="DIR_PATH"))
 while REMOTE_PROJECT_DIR_PATH.endswith("/"):
     REMOTE_PROJECT_DIR_PATH = REMOTE_PROJECT_DIR_PATH.removesuffix("/")
-REMOTE_SERVICE_FILENAME = config.get_required_value(section="RemoteMachine", option="REMOTE_SERVICE_FILENAME")
+REMOTE_SERVICE_FILENAME = config.get_required_value(section="RemoteProject", option="SERVICE_FILENAME")
 while REMOTE_SERVICE_FILENAME.startswith("/"):
     REMOTE_SERVICE_FILENAME = REMOTE_SERVICE_FILENAME.removeprefix("/")
 if not REMOTE_SERVICE_FILENAME.endswith(".service"):
     REMOTE_SERVICE_FILENAME += ".service"
 REMOTE_PATH_TO_SERVICES_DIR = "/etc/systemd/system/"
-REMOTE_PROJECT_FILE_TO_RUN = config.get_required_value(section="RemoteMachine", option="REMOTE_PROJECT_FILE_TO_RUN")
-REMOTE_VENV_DIR_NAME = config.get_required_value(section="RemoteMachine", option="REMOTE_VENV_DIR_NAME")
+REMOTE_PROJECT_FILE_TO_RUN = config.get_required_value(section="RemoteProject", option="FILE_TO_RUN")
+REMOTE_VENV_DIR_NAME = config.get_required_value(section="RemoteProject", option="VENV_DIR_NAME")
 while REMOTE_VENV_DIR_NAME.startswith("/") or REMOTE_VENV_DIR_NAME.endswith("/"):
     REMOTE_VENV_DIR_NAME = REMOTE_VENV_DIR_NAME.removesuffix("/").removeprefix("/")
-REMOTE_LOG_FILE_PATH = config.get_optional_value(section="RemoteMachine", option="REMOTE_LOG_FILE_PATH")
+REMOTE_LOG_FILE_PATH = config.get_optional_value(section="RemoteProject", option="LOG_FILE_PATH")
 if REMOTE_LOG_FILE_PATH:
     REMOTE_LOG_FILE_PATH = tilda_replacer(REMOTE_LOG_FILE_PATH)
-LOCAL_LOG_FILE_PATH_TO_DOWNLOAD_IN = config.get_optional_value(section="LocalMachine", option="LOCAL_LOG_FILE_PATH_TO_DOWNLOAD_IN")
-LOCAL_PROJECT_DIR_PATH = config.get_required_value(section="LocalMachine", option="LOCAL_PROJECT_DIR_PATH")
+LOCAL_LOG_FILE_PATH_TO_DOWNLOAD_IN = config.get_optional_value(section="LocalProject", option="LOG_FILE_PATH_TO_DOWNLOAD_IN")
+LOCAL_PROJECT_DIR_PATH = config.get_required_value(section="LocalProject", option="DIR_PATH")
 while LOCAL_PROJECT_DIR_PATH.endswith("/"):
     LOCAL_PROJECT_DIR_PATH = LOCAL_PROJECT_DIR_PATH.removesuffix("/")
 
@@ -42,7 +43,6 @@ IGNORE = ignoring_file.IgnoreFile(
     ignore_filepath=os.path.join(PROPERTIES_DIR, "ProjectDelivery.ign"),
     project_path=LOCAL_PROJECT_DIR_PATH
 )
-IGNORE.update_files2ignore()
 
 
 # Init SSH
@@ -51,9 +51,10 @@ SSH_REMOTE_MACHINE.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 try:
     # Connect to server
     SSH_REMOTE_MACHINE.connect(
-        hostname=REMOTE_IPV4,
+        hostname=REMOTE_MACHINE_HOST,
+        port=REMOTE_MACHINE_PORT,
         username=REMOTE_USERNAME,
-        password=PASSWORD_TO_REMOTE_SERVER,
+        password=REMOTE_MACHINE_PASSWORD,
     )
 except paramiko.AuthenticationException:
     raise exceptions.SSPDExceptionWithoutClosingConnection("Invalid USERNAME or PASSWORD")
