@@ -92,9 +92,9 @@ def restart_running_remote_code():
 
 
 def run_reinstalling_remote_requirements():
-    io.print_info(f"Try to reinstall requirements in remote '{base.REMOTE_VENV_DIR_NAME}'")
+    io.print_info(f"Try to reinstall requirements in remote '{base.CORE_VENV_DIR_NAME}'")
     execute_remote_command((
-        f"{base.REMOTE_PROJECT_DIR_PATH}/{base.REMOTE_VENV_DIR_NAME}/bin/pip"
+        f"{base.REMOTE_PROJECT_DIR_PATH}/{base.CORE_VENV_DIR_NAME}/bin/pip"
         " install -r "
         f"{REQUIREMENTS_FILE.to_absolute(base.REMOTE_PROJECT_DIR_PATH)}"
     ))

@@ -19,6 +19,10 @@ REMOTE_MACHINE_PORT = config.get_optional_value(section="RemoteMachine", option=
 if REMOTE_MACHINE_PORT is None:
     REMOTE_MACHINE_PORT = SSH_PORT
 REMOTE_MACHINE_PASSWORD = config.get_required_value(section="RemoteMachine", option="PASSWORD")
+CORE_PROJECT_FILE_TO_RUN = config.get_required_value(section="CoreProject", option="FILE_TO_RUN")
+CORE_VENV_DIR_NAME = config.get_required_value(section="CoreProject", option="VENV_DIR_NAME")
+while CORE_VENV_DIR_NAME.startswith("/") or CORE_VENV_DIR_NAME.endswith("/"):
+    CORE_VENV_DIR_NAME = CORE_VENV_DIR_NAME.removesuffix("/").removeprefix("/")
 REMOTE_PROJECT_DIR_PATH = tilda_replacer(config.get_required_value(section="RemoteProject", option="DIR_PATH"))
 while REMOTE_PROJECT_DIR_PATH.endswith("/"):
     REMOTE_PROJECT_DIR_PATH = REMOTE_PROJECT_DIR_PATH.removesuffix("/")
@@ -28,10 +32,6 @@ while REMOTE_SERVICE_FILENAME.startswith("/"):
 if not REMOTE_SERVICE_FILENAME.endswith(".service"):
     REMOTE_SERVICE_FILENAME += ".service"
 REMOTE_PATH_TO_SERVICES_DIR = "/etc/systemd/system/"
-REMOTE_PROJECT_FILE_TO_RUN = config.get_required_value(section="RemoteProject", option="FILE_TO_RUN")
-REMOTE_VENV_DIR_NAME = config.get_required_value(section="RemoteProject", option="VENV_DIR_NAME")
-while REMOTE_VENV_DIR_NAME.startswith("/") or REMOTE_VENV_DIR_NAME.endswith("/"):
-    REMOTE_VENV_DIR_NAME = REMOTE_VENV_DIR_NAME.removesuffix("/").removeprefix("/")
 REMOTE_LOG_FILE_PATH = config.get_optional_value(section="RemoteProject", option="LOG_FILE_PATH")
 if REMOTE_LOG_FILE_PATH:
     REMOTE_LOG_FILE_PATH = tilda_replacer(REMOTE_LOG_FILE_PATH)
@@ -67,7 +67,7 @@ SFTP_REMOTE_MACHINE = SSH_REMOTE_MACHINE.open_sftp()
 
 
 DEFAULT_SERVICE_FILE_CONTENT = f"""[Unit]
-Description={REMOTE_SERVICE_FILENAME.replace(".service", "")}
+Description={REMOTE_SERVICE_FILENAME.removesuffix(".service")}
 After=syslog.target
 After=network.target
 
@@ -79,7 +79,7 @@ Group={REMOTE_USERNAME}
 
 Type=simple
 Restart=always
-ExecStart={REMOTE_PROJECT_DIR_PATH}/{REMOTE_VENV_DIR_NAME}/bin/python3 {REMOTE_PROJECT_DIR_PATH}/{REMOTE_PROJECT_FILE_TO_RUN}
+ExecStart={REMOTE_PROJECT_DIR_PATH}/{CORE_VENV_DIR_NAME}/bin/python3 {REMOTE_PROJECT_DIR_PATH}/{CORE_PROJECT_FILE_TO_RUN}
 
 [Install]
 WantedBy=multi-user.target"""

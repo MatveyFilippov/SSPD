@@ -47,13 +47,13 @@ def check_remote_project_dir():
 def check_remote_venv():
     for i in range(2):
         _, _, stderr = base.SSH_REMOTE_MACHINE.exec_command(
-            f"source {base.REMOTE_PROJECT_DIR_PATH}/{base.REMOTE_VENV_DIR_NAME}/bin/activate"
+            f"source {base.REMOTE_PROJECT_DIR_PATH}/{base.CORE_VENV_DIR_NAME}/bin/activate"
         )
         if "No such file or directory" in stderr.read().decode():
             if i == 0:
-                print(f"Creating '{base.REMOTE_VENV_DIR_NAME}' in remote project dir...")
+                print(f"Creating '{base.CORE_VENV_DIR_NAME}' in remote project dir...")
                 _, _, stderr = base.SSH_REMOTE_MACHINE.exec_command(
-                    f"python3 -m venv {base.REMOTE_PROJECT_DIR_PATH}/{base.REMOTE_VENV_DIR_NAME}"
+                    f"python3 -m venv {base.REMOTE_PROJECT_DIR_PATH}/{base.CORE_VENV_DIR_NAME}"
                 )
                 er_text = stderr.read()
                 if er_text:
