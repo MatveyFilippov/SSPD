@@ -1,6 +1,7 @@
 from . import exceptions
 from .misc_helpers import config_file, ignoring_file
 import paramiko
+from paramiko.config import SSH_PORT
 import os
 
 
@@ -15,6 +16,8 @@ REMOTE_USER_HOME_DIR = f"/{REMOTE_USERNAME}/" if REMOTE_USERNAME == "root" else 
 tilda_replacer = lambda p: (REMOTE_USER_HOME_DIR + p.removeprefix("~/")) if p.startswith("~/") else p
 REMOTE_MACHINE_HOST = config.get_required_value(section="RemoteMachine", option="HOST")
 REMOTE_MACHINE_PORT = config.get_optional_value(section="RemoteMachine", option="PORT", required_type=int)
+if REMOTE_MACHINE_PORT is None:
+    REMOTE_MACHINE_PORT = SSH_PORT
 REMOTE_MACHINE_PASSWORD = config.get_required_value(section="RemoteMachine", option="PASSWORD")
 REMOTE_PROJECT_DIR_PATH = tilda_replacer(config.get_required_value(section="RemoteProject", option="DIR_PATH"))
 while REMOTE_PROJECT_DIR_PATH.endswith("/"):
