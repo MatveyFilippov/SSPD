@@ -19,39 +19,6 @@ def is_byte_content_different(local: bytes, remote: bytes) -> bool:
     return get_checksum(local) != get_checksum(remote)
 
 
-def _get_filenames_in_remote_dir(*, folder_path: str, source_folder_path: str) -> set[FilePath]:
-    result = set()
-    try:
-        for remote_filename in base.SFTP_REMOTE_MACHINE.listdir(folder_path):
-            remote_absolute_path = folder_path + "/" + remote_filename
-            if checker.is_remote_dir(remote_absolute_path):
-                result.update(_get_filenames_in_remote_dir(
-                    folder_path=remote_absolute_path, source_folder_path=source_folder_path,
-                ))
-            elif checker.is_remote_file(remote_absolute_path):
-                result.add(FilePath.from_filepath(filepath=remote_absolute_path, project_folderpath=source_folder_path))
-    except FileNotFoundError:
-        raise exceptions.SSPDUnhandleableException(f"It isn't a file or folder in remote project dir '{folder_path}'")
-    return result
-
-
-def get_filenames_in_remote_dir(*, folder_path: str, files2ignore: set[FilePath] | None = None) -> set[FilePath]:
-    result = _get_filenames_in_remote_dir(folder_path=folder_path, source_folder_path=folder_path)
-    if files2ignore:
-        result.difference_update(files2ignore)
-    return result
-
-
-def get_filenames_in_local_dir(*, folder_path: str, files2ignore: set[FilePath] | None = None) -> set[FilePath]:
-    result = set(
-        FilePath.from_filepath(filepath=os.path.join(root, file), project_folderpath=folder_path)
-        for root, dirs, files in os.walk(folder_path) for file in files
-    )
-    if files2ignore:
-        result.difference_update(files2ignore)
-    return result
-
-
 class FileAnalysing:
     LOCAL_FILES: set[FilePath] = set()
     REMOTE_FILES: set[FilePath] = set()
@@ -61,22 +28,42 @@ class FileAnalysing:
     __deleted_files: set[FilePath] = set()
 
     @classmethod
+    def reset_local_files(cls):
+        cls.LOCAL_FILES = set(
+            FilePath.from_filepath(filepath=os.path.join(root, file), project_folderpath=base.LOCAL_PROJECT_DIR_PATH)
+            for root, dirs, files in os.walk(base.LOCAL_PROJECT_DIR_PATH) for file in files
+        )
+        cls.LOCAL_FILES.difference_update(base.IGNORE.files2ignore)
+
+    @classmethod
+    def reset_remote_files(cls):
+        def get_filenames_in_remote_dir(root: str) -> set[FilePath]:
+            result = set()
+            try:
+                for file in base.SFTP_REMOTE_MACHINE.listdir(root):
+                    if root == base.REMOTE_PROJECT_DIR_PATH and file == base.CORE_VENV_DIR_NAME:
+                        continue
+                    remote_absolute_path = root + "/" + file
+                    if checker.is_remote_dir(remote_absolute_path):
+                        result.update(get_filenames_in_remote_dir(root=remote_absolute_path))
+                    elif checker.is_remote_file(remote_absolute_path):
+                        result.add(FilePath.from_filepath(
+                            filepath=remote_absolute_path, project_folderpath=base.REMOTE_PROJECT_DIR_PATH,
+                        ))
+            except FileNotFoundError:
+                raise exceptions.SSPDUnhandleableException(
+                    f"It isn't a file or folder in remote project dir '{root}'")
+            return result
+
+        cls.REMOTE_FILES = get_filenames_in_remote_dir(base.REMOTE_PROJECT_DIR_PATH)
+        cls.REMOTE_FILES.difference_update(base.IGNORE.files2ignore)
+
+    @classmethod
     def refresh(cls):
         base.IGNORE.update_files2ignore()
 
-        remote_venv_files = _get_filenames_in_remote_dir(
-            folder_path=base.REMOTE_PROJECT_DIR_PATH + "/" + base.REMOTE_VENV_DIR_NAME,
-            source_folder_path=base.REMOTE_PROJECT_DIR_PATH,
-        )
-        files2ignore_with_venv_dir = base.IGNORE.files2ignore
-        files2ignore_with_venv_dir.update(remote_venv_files)
-
-        cls.LOCAL_FILES = get_filenames_in_local_dir(
-            folder_path=base.LOCAL_PROJECT_DIR_PATH, files2ignore=files2ignore_with_venv_dir,
-        )
-        cls.REMOTE_FILES = get_filenames_in_remote_dir(
-            folder_path=base.REMOTE_PROJECT_DIR_PATH, files2ignore=files2ignore_with_venv_dir,
-        )
+        cls.reset_local_files()
+        cls.reset_local_files()
 
         cls.__updated_files = set()
         cls.__new_files = set()
