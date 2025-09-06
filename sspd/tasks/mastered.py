@@ -35,7 +35,7 @@ def update_remote_code():
     files2send = set()
     for new_file in FileAnalysing.get_new_files():
         files2send.add(new_file)
-        io.print_info(f" * New: {files2send}")
+        io.print_info(f" * New: {new_file}")
     for updated_file in FileAnalysing.get_updated_files():
         files2send.add(updated_file)
         io.print_info(f" * Update: {updated_file}")
@@ -43,9 +43,7 @@ def update_remote_code():
         io.print_info("All files up to date!")
         return
 
-    sign2break = "N"
-    user_decision = input(f"Are you sure to send all this files to remote server? (y/{sign2break}): ")
-    if user_decision.strip() == sign2break:
+    if io.input_bool("Are you sure to send all this files to remote server? (y/{sign2break}): ", sign2break="N"):
         io.print_info("Break process...")
         return
 

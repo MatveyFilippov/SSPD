@@ -72,10 +72,8 @@ def stop_running_remote_code():
         f"sudo systemctl stop {base.REMOTE_SERVICE_FILENAME}", ignore_error=True,
     )
     if status == -1:
-        sign2break = "Br"
-        print("While stop running was unexpected error, do you want to break process?")
-        user_decision = input(f"ENTER (to continue) / '{sign2break}' (to break): ").strip()
-        if user_decision == sign2break:
+        io.print_info("While stop running was unexpected error, do you want to break process?")
+        if io.input_bool("ENTER (to continue) / '{sign2break}' (to break): ", sign2break="Br"):
             raise exceptions.SSPDUnhandleableException(response)
 
 

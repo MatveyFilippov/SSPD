@@ -1,4 +1,5 @@
 from .. import base, exceptions
+from ..misc_helpers import io
 import os
 from stat import S_ISDIR, S_ISREG
 
@@ -51,7 +52,7 @@ def check_remote_venv():
         )
         if "No such file or directory" in stderr.read().decode():
             if i == 0:
-                print(f"Creating '{base.CORE_VENV_DIR_NAME}' in remote project dir...")
+                io.print_info(f"Creating '{base.CORE_VENV_DIR_NAME}' in remote project dir...")
                 _, _, stderr = base.SSH_REMOTE_MACHINE.exec_command(
                     f"python3 -m venv {base.REMOTE_PROJECT_DIR_PATH}/{base.CORE_VENV_DIR_NAME}"
                 )
@@ -71,17 +72,13 @@ def check_remote_service():
                 raise ValueError("Service file content is not actual")
     except FileNotFoundError:
         er_text = f"File '{base.REMOTE_SERVICE_FILENAME}' (service) not exists in remote server"
-        print(er_text)
-        sign2ignore = "N"
-        user_decision = input(f"Can I write default service by myself (y/{sign2ignore}): ")
-        if user_decision.strip() == sign2ignore:
+        io.print_info(er_text)
+        if io.input_bool("Can I write default service by myself (y/{sign2ignore}): ", sign2ignore="N"):
             raise exceptions.SSPDUnhandleableException(er_text)
         local_service_cope_filepath = __write_default_service()
-        print(f"You can look copy of created service file in '{local_service_cope_filepath}'")
+        io.print_info(f"You can look copy of created service file in '{local_service_cope_filepath}'")
     except ValueError:
-        print(f"Content of '{base.REMOTE_SERVICE_FILENAME}' (service) is not actual in remote server")
-        sign2ignore = "N"
-        user_decision = input(f"Can I rewrite default service by myself (y/{sign2ignore}): ")
-        if user_decision.strip() != sign2ignore:
+        io.print_info(f"Content of '{base.REMOTE_SERVICE_FILENAME}' (service) is not actual in remote server")
+        if not io.input_bool("Can I rewrite default service by myself (y/{sign2ignore}): ", sign2ignore="N"):
             local_service_cope_filepath = __write_default_service()
-            print(f"You can look copy of created service file in '{local_service_cope_filepath}'")
+            io.print_info(f"You can look copy of created service file in '{local_service_cope_filepath}'")

@@ -1,3 +1,4 @@
+from . import io
 from .paths import FilePath
 import os
 import sys
@@ -34,10 +35,11 @@ __pycache__{IgnKeyChars.folder_endswith}
 def init_default_ignore_file(filepath: str):
     with open(filepath, "w", encoding="UTF-8") as file:
         file.write(DESCRIPTION_SSPD_IGN)
-    print(f"File '{os.path.join('...', os.path.sep + filepath)}' is clean. Do you want to ignore any files?")
-    sign2continue = "No"
-    user_decision = input(f"ENTER (to break process and fill ign file) / '{sign2continue}' (to continue without ignoring): ")
-    if user_decision.strip() == sign2continue:
+    io.print_info(f"File '{os.path.join('...', os.path.sep + filepath)}' is clean. Do you want to ignore any files?")
+    if not io.input_bool(
+        "ENTER (to break process and fill ign file) / '{sign2continue}' (to continue without ignoring): ",
+        sign2continue="No",
+    ):
         return
     with open(filepath, "a+", encoding="UTF-8") as file:
         file.write("\n\n" + DEFAULT_SSPD_IGN_CONTENT)
