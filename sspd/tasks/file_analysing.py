@@ -14,7 +14,6 @@ def get_checksum(data: str | bytes) -> str:
     return checksum.hexdigest()
 
 
-@lru_cache()
 def is_byte_content_different(local: bytes, remote: bytes) -> bool:
     return get_checksum(local) != get_checksum(remote)
 
@@ -51,8 +50,7 @@ class FileAnalysing:
                             filepath=remote_absolute_path, project_folderpath=base.REMOTE_PROJECT_DIR_PATH,
                         ))
             except FileNotFoundError:
-                raise exceptions.SSPDUnhandleableException(
-                    f"It isn't a file or folder in remote project dir '{root}'")
+                raise exceptions.SSPDUnhandleableException(f"It isn't a folder in remote machine '{root}'")
             return result
 
         cls.REMOTE_FILES = get_filenames_in_remote_dir(base.REMOTE_PROJECT_DIR_PATH)
@@ -63,7 +61,7 @@ class FileAnalysing:
         base.IGNORE.update_files2ignore()
 
         cls.reset_local_files()
-        cls.reset_local_files()
+        cls.reset_remote_files()
 
         cls.__updated_files = set()
         cls.__new_files = set()
