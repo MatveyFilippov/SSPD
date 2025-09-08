@@ -65,7 +65,7 @@ class IgnoreFile:
         self.__files2ignore: set[FilePath] = set()
         self.__markers: set[str] = set()
 
-    def __iter_ign_file_lines(self, skip_comment_lines=True) -> Iterator[str]:
+    def __iter_ign_file_lines(self, skip_comment_lines: bool | None = True) -> Iterator[str]:
         with open(self._IGNORE_FILEPATH, "r") as file:
             for line in file:
                 line = line.strip()

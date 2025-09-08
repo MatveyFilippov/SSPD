@@ -66,6 +66,6 @@ class FilePath:
         return FilePath(*(self.__ABSTRACT_PATH[:-1]))
 
     @classmethod
-    def from_filepath(cls, filepath: str, project_folderpath: str | None = None) -> 'FilePath':
+    def from_filepath(cls, filepath: str, project_folderpath: str | None = "") -> 'FilePath':
         filepath = filepath.removeprefix(project_folderpath)
         return cls(*tuple(part for part in split_filepath(filepath)))

@@ -7,28 +7,30 @@ import os
 REQUIREMENTS_FILE = FilePath("requirements.txt")
 
 
-def execute_remote_command(command: str, print_request=True, print_response=True,
-                           ignore_error=False, in_dir: str | None = None) -> tuple[int, str]:
-    if in_dir:
-        command = f"cd {in_dir} && {command}"
+def execute_remote_command(command: str, raise_on_error: bool | None = True,
+                           print_request: bool | None = True, print_response: bool | None = True) -> tuple[int, str]:
     if print_request:
         io.print_request(command)
+
     _, stdout, stderr = base.SSH_REMOTE_MACHINE.exec_command(command)
+
     er_text = stderr.read().decode().strip()
     if er_text != "":
         if "[notice]" in er_text:
             io.print_response(er_text)
         else:
-            if not ignore_error:
+            if raise_on_error:
                 raise exceptions.SSPDUnhandleableException(er_text)
             if print_response:
                 io.print_response(er_text)
             return -1, er_text
+
     response = stdout.read().decode().strip()
     if response == "":
         response = "OK"
     if print_response:
         io.print_response(response)
+
     return 0, response
 
 
@@ -66,33 +68,27 @@ def send_file_to_remote_server(local_filepath: str, remote_filepath: str):
         raise exceptions.SSPDUnhandleableException(f"No such file '{local_filepath}' in local machine")
 
 
-def stop_running_remote_code():
+def stop_running_remote_code(raise_on_error: bool | None = True) -> tuple[int, str]:
     io.print_info("Stop running remote py code")
-    status, response = execute_remote_command(
-        f"sudo systemctl stop {base.REMOTE_SERVICE_FILENAME}", ignore_error=True,
-    )
-    if status == -1:
-        io.print_info("While stop running was unexpected error, do you want to break process?")
-        if io.input_bool("ENTER (to continue) / '{sign2break}' (to break): ", sign2break="Br"):
-            raise exceptions.SSPDUnhandleableException(response)
+    return execute_remote_command(f"sudo systemctl stop {base.REMOTE_SERVICE_FILENAME}", raise_on_error=raise_on_error)
 
 
-def start_running_remote_code():
+def start_running_remote_code(raise_on_error: bool | None = True) -> tuple[int, str]:
     io.print_info("Start running remote py code")
-    execute_remote_command(f"sudo systemctl start {base.REMOTE_SERVICE_FILENAME}")
+    return execute_remote_command(f"sudo systemctl start {base.REMOTE_SERVICE_FILENAME}", raise_on_error=raise_on_error)
 
 
-def restart_running_remote_code():
+def restart_running_remote_code(raise_on_error: bool | None = True) -> tuple[int, str]:
     io.print_info("Reload daemons")
     execute_remote_command(f"sudo systemctl daemon-reload")
     io.print_info("Restart running remote py code")
-    execute_remote_command(f"sudo systemctl restart {base.REMOTE_SERVICE_FILENAME}")
+    return execute_remote_command(f"sudo systemctl restart {base.REMOTE_SERVICE_FILENAME}", raise_on_error=raise_on_error)
 
 
-def run_reinstalling_remote_requirements():
+def run_reinstalling_remote_requirements(raise_on_error: bool | None = True) -> tuple[int, str]:
     io.print_info(f"Try to reinstall requirements in remote '{base.CORE_VENV_DIR_NAME}'")
-    execute_remote_command((
+    return execute_remote_command((
         f"{base.REMOTE_PROJECT_DIR_PATH}/{base.CORE_VENV_DIR_NAME}/bin/pip"
         " install -r "
         f"{REQUIREMENTS_FILE.to_absolute(base.REMOTE_PROJECT_DIR_PATH)}"
-    ))
+    ), raise_on_error=raise_on_error)

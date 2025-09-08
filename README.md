@@ -8,7 +8,7 @@ Lib can:
 * install requirements
 * create service file
 * upload files that was changed or not exists
-* control starting and stopping execution
+* start and stop control
 * execute your personal commands
 * ...
 
@@ -71,14 +71,15 @@ def delete_not_required_data():
     """Custom sspd task"""
     sspd.tasks.stop_running_remote_code()
     sspd.tasks.execute_remote_command(
-        command=f"{sspd.base.REMOTE_PROJECT_DIR_PATH}/UserCaches clean",
+        command=f"cd /homer/datas && mv new.homer old.homer",
         print_request=False, print_response=False,
-        ignore_error=True,
     )
-    sspd.tasks.execute_remote_command(
-        command=f"mv new.homer old.homer",
-        in_dir="/homer/datas",
+    status, response = sspd.tasks.execute_remote_command(
+        command=f"{sspd.base.REMOTE_PROJECT_DIR_PATH}/UserCaches clean",
+        raise_on_error=False,
     )
+    if status == -1:
+        print(f"Something went wrong: {response}")
     sspd.tasks.start_running_remote_code()
 
 
