@@ -36,7 +36,7 @@ def init_default_ignore_file(filepath: str):
     with open(filepath, "w", encoding="UTF-8") as file:
         file.write(DESCRIPTION_SSPD_IGN)
     io.print_info(f"File '{os.path.join('...', os.path.sep + filepath)}' is clean. Do you want to ignore any files?")
-    if not io.input_bool(
+    if io.input_bool(
         "ENTER (to break process and fill ign file) / '{sign2continue}' (to continue without ignoring): ",
         sign2continue="No",
     ):
