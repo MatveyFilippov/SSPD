@@ -22,10 +22,10 @@ def is_remote_file(path: str) -> bool:
 
 def __write_default_service() -> str:  # TODO: put service file as superuser (nano M.service -> sudo nano M.service)
     service_filepath_created_by_base = os.path.join(
-        base.PROPERTIES_DIR, "SSPD_DefaultServiceFileCreatedInRemoteMachine.service"
+        base.PROPERTIES_DIR, "SSPD_ServiceCreatedInRemoteMachine.service"
     )
     with open(service_filepath_created_by_base, "w") as default_service_file:
-        default_service_file.write(base.DEFAULT_SERVICE_FILE_CONTENT)
+        default_service_file.write(base.SERVICE_CONTENT)
     with open(service_filepath_created_by_base, "rb") as default_service_file:
         base.SFTP_REMOTE_MACHINE.putfo(
             default_service_file, base.REMOTE_PATH_TO_SERVICES_DIR + base.REMOTE_SERVICE_FILENAME
@@ -68,7 +68,7 @@ def check_remote_venv():
 def check_remote_service():
     try:
         with base.SFTP_REMOTE_MACHINE.open(base.REMOTE_PATH_TO_SERVICES_DIR + base.REMOTE_SERVICE_FILENAME, "r") as remote_file:
-            if base.DEFAULT_SERVICE_FILE_CONTENT.strip() != remote_file.read().decode().strip():
+            if base.SERVICE_CONTENT != remote_file.read().decode().strip():
                 raise ValueError("Service file content is not actual")
     except FileNotFoundError:
         er_text = f"File '{base.REMOTE_SERVICE_FILENAME}' (service) not exists in remote server"

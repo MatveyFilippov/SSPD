@@ -35,10 +35,11 @@ REMOTE_PATH_TO_SERVICES_DIR = "/etc/systemd/system/"
 REMOTE_LOG_FILE_PATH = config.get_optional_value(section="RemoteProject", option="LOG_FILE_PATH")
 if REMOTE_LOG_FILE_PATH:
     REMOTE_LOG_FILE_PATH = tilda_replacer(REMOTE_LOG_FILE_PATH)
-LOCAL_LOG_FILE_PATH_TO_DOWNLOAD_IN = config.get_optional_value(section="LocalProject", option="LOG_FILE_PATH_TO_DOWNLOAD_IN")
 LOCAL_PROJECT_DIR_PATH = config.get_required_value(section="LocalProject", option="DIR_PATH")
 while LOCAL_PROJECT_DIR_PATH.endswith("/"):
     LOCAL_PROJECT_DIR_PATH = LOCAL_PROJECT_DIR_PATH.removesuffix("/")
+LOCAL_LOG_FILE_PATH_TO_DOWNLOAD_IN = config.get_optional_value(section="LocalProject", option="LOG_FILE_PATH_TO_DOWNLOAD_IN")
+LOCAL_SERVICE_CONTENT_PATH = config.get_optional_value(section="LocalProject", option="SERVICE_CONTENT_PATH")
 
 
 # Get filepaths to ignore in SSPD process
@@ -66,7 +67,11 @@ except paramiko.AuthenticationException:
 SFTP_REMOTE_MACHINE = SSH_REMOTE_MACHINE.open_sftp()
 
 
-DEFAULT_SERVICE_FILE_CONTENT = f"""[Unit]
+local_service_content = None
+if LOCAL_SERVICE_CONTENT_PATH:
+    with open(LOCAL_SERVICE_CONTENT_PATH, 'r') as file:
+        local_service_content = file.read().strip()
+SERVICE_CONTENT = local_service_content or f"""[Unit]
 Description={REMOTE_SERVICE_FILENAME.removesuffix(".service")}
 After=syslog.target
 After=network.target
