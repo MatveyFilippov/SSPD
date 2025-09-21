@@ -5,7 +5,7 @@ import hashlib
 import os
 
 
-@lru_cache()
+@lru_cache(maxsize=1_000)
 def get_checksum(data: str | bytes) -> str:
     if type(data) == str:
         data = data.encode()

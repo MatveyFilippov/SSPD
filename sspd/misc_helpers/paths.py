@@ -2,7 +2,7 @@ from functools import lru_cache
 import re
 
 
-@lru_cache
+@lru_cache(maxsize=1_000)
 def split_filepath(filepath: str) -> list[str]:
     parts = re.split(r"(/|\\)+", filepath)
     result = []
