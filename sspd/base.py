@@ -13,7 +13,7 @@ os.makedirs(PROPERTIES_DIR, exist_ok=True)
 config = config_file.ConfigFile(os.path.join(PROPERTIES_DIR, "ProjectDelivery.ini"))
 REMOTE_USERNAME = config.get_required_value(section="RemoteMachine", option="USERNAME")
 REMOTE_USER_HOME_DIR = f"/{REMOTE_USERNAME}/" if REMOTE_USERNAME == "root" else f"/home/{REMOTE_USERNAME}/"
-tilda_replacer = lambda p: (REMOTE_USER_HOME_DIR + p.removeprefix("~/")) if p.startswith("~/") else p
+tilda_replacer = (lambda p: (REMOTE_USER_HOME_DIR + p.removeprefix("~/")) if p.startswith("~/") else p)
 REMOTE_MACHINE_HOST = config.get_required_value(section="RemoteMachine", option="HOST")
 REMOTE_MACHINE_PORT = config.get_optional_value(section="RemoteMachine", option="PORT", required_type=int)
 if REMOTE_MACHINE_PORT is None:
