@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sspd"
-version = "2.0.1"
+version = "2.1.0-alpha"
 description = "SSH/SCP Project Delivery"
 readme = "README.md"
 authors = [
@@ -17,6 +17,7 @@ classifiers = [
 ]
 dependencies = [
     'paramiko==4.0.0',
+    'pathspec==1.0.4',
 ]
 
 [project.urls]

@@ -19,52 +19,59 @@ def is_byte_content_different(local: bytes, remote: bytes) -> bool:
 
 
 class FileAnalysing:
+    CORE_VENV_FILEPATH = FilePath(base.CORE_VENV_DIR_NAME)
     LOCAL_FILES: set[FilePath] = set()
     REMOTE_FILES: set[FilePath] = set()
 
     __updated_files: set[FilePath] = set()
-    __new_files: set[FilePath] = set()
+    __created_files: set[FilePath] = set()
     __deleted_files: set[FilePath] = set()
 
     @classmethod
     def reset_local_files(cls):
-        cls.LOCAL_FILES = set(
-            FilePath.from_filepath(filepath=os.path.join(root, file), project_folderpath=base.LOCAL_PROJECT_DIR_PATH)
-            for root, dirs, files in os.walk(base.LOCAL_PROJECT_DIR_PATH) for file in files
-        )
-        cls.LOCAL_FILES.difference_update(base.IGNORE.files2ignore)
+        cls.LOCAL_FILES = set()
+        for current_dir, subdirs, files in os.walk(base.LOCAL_PROJECT_DIR_PATH):
+            kept_subdirs = []
+            for subdir in subdirs:
+                filepath = FilePath.from_filepath(filepath=os.path.join(current_dir, subdir), project_folderpath=base.LOCAL_PROJECT_DIR_PATH)
+                if not base.IGNORE.is_path_ignored(filepath) and filepath != cls.CORE_VENV_FILEPATH:
+                    kept_subdirs.append(subdir)
+            subdirs[:] = kept_subdirs
+
+            for file in files:
+                filepath = FilePath.from_filepath(filepath=os.path.join(current_dir, file), project_folderpath=base.LOCAL_PROJECT_DIR_PATH)
+                if not base.IGNORE.is_path_ignored(filepath):
+                    cls.LOCAL_FILES.add(filepath)
 
     @classmethod
     def reset_remote_files(cls):
-        def get_filenames_in_remote_dir(root: str) -> set[FilePath]:
+        def get_filepaths_in_remote_dir(root: str) -> set[FilePath]:
             result = set()
             try:
                 for file in base.SFTP_REMOTE_MACHINE.listdir(root):
-                    if root == base.REMOTE_PROJECT_DIR_PATH and file == base.CORE_VENV_DIR_NAME:
+                    filepath = FilePath.from_filepath(filepath=(root + "/" + file), project_folderpath=base.REMOTE_PROJECT_DIR_PATH)
+                    if base.IGNORE.is_path_ignored(filepath) or filepath == cls.CORE_VENV_FILEPATH:
                         continue
-                    remote_absolute_path = root + "/" + file
+                    remote_absolute_path = filepath.to_absolute(project_folderpath=base.REMOTE_PROJECT_DIR_PATH)
                     if checker.is_remote_dir(remote_absolute_path):
-                        result.update(get_filenames_in_remote_dir(root=remote_absolute_path))
+                        result.update(get_filepaths_in_remote_dir(root=remote_absolute_path))
                     elif checker.is_remote_file(remote_absolute_path):
-                        result.add(FilePath.from_filepath(
-                            filepath=remote_absolute_path, project_folderpath=base.REMOTE_PROJECT_DIR_PATH,
-                        ))
+                        result.add(filepath)
             except FileNotFoundError:
                 raise exceptions.SSPDUnhandleableException(f"It isn't a folder in remote machine '{root}'")
             return result
 
-        cls.REMOTE_FILES = get_filenames_in_remote_dir(base.REMOTE_PROJECT_DIR_PATH)
-        cls.REMOTE_FILES.difference_update(base.IGNORE.files2ignore)
+        cls.REMOTE_FILES = get_filepaths_in_remote_dir(base.REMOTE_PROJECT_DIR_PATH)
 
     @classmethod
     def refresh(cls):
-        base.IGNORE.update_files2ignore()
+        base.IGNORE.update_ignore_patterns()
 
         cls.reset_local_files()
         cls.reset_remote_files()
 
         cls.__updated_files = set()
-        cls.__new_files = set()
+        cls.__created_files = set()
         cls.__deleted_files = set()
 
     @classmethod
@@ -82,25 +89,21 @@ class FileAnalysing:
 
     @classmethod
     def get_updated_files(cls) -> set[FilePath]:
-        if cls.__updated_files:
-            return cls.__updated_files.copy()
-
-        for filename in cls.REMOTE_FILES:
-            if filename in cls.LOCAL_FILES and cls.__is_file_updated(filename):
-                cls.__updated_files.add(filename)
+        if not cls.__updated_files:
+            for filename in cls.REMOTE_FILES:
+                if filename in cls.LOCAL_FILES and cls.__is_file_updated(filename):
+                    cls.__updated_files.add(filename)
 
         return cls.__updated_files.copy()
 
     @classmethod
-    def get_new_files(cls) -> set[FilePath]:
-        if cls.__new_files:
-            return cls.__new_files.copy()
+    def get_created_files(cls) -> set[FilePath]:
+        if not cls.__created_files:
+            for filename in cls.LOCAL_FILES:
+                if filename not in cls.REMOTE_FILES:
+                    cls.__created_files.add(filename)
 
-        for filename in cls.LOCAL_FILES:
-            if filename not in cls.REMOTE_FILES:
-                cls.__new_files.add(filename)
-
-        return cls.__new_files.copy()
+        return cls.__created_files.copy()
 
     @classmethod
     def get_deleted_files(cls) -> set[FilePath]:

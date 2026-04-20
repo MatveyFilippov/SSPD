@@ -33,9 +33,9 @@ def update_remote_code(run_after_update: bool | None = True):
     FileAnalysing.refresh()
 
     files2send = set()
-    for new_file in FileAnalysing.get_new_files():
-        files2send.add(new_file)
-        io.print_info(f" * New: {new_file}")
+    for created_file in FileAnalysing.get_created_files():
+        files2send.add(created_file)
+        io.print_info(f" * Create: {created_file}")
     for updated_file in FileAnalysing.get_updated_files():
         files2send.add(updated_file)
         io.print_info(f" * Update: {updated_file}")

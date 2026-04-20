@@ -44,7 +44,7 @@ LOCAL_SERVICE_CONTENT_PATH = config.get_optional_value(section="LocalProject", o
 
 # Get filepaths to ignore in SSPD process
 IGNORE = ignoring_file.IgnoreFile(
-    ignore_filepath=os.path.join(PROPERTIES_DIR, "ProjectDelivery.ign"),
+    ignore_filepath=os.path.join(PROPERTIES_DIR, "ProjectDelivery.ignore"),
     project_path=LOCAL_PROJECT_DIR_PATH
 )
 
