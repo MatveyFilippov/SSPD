@@ -26,7 +26,7 @@ def send_files_from_project_dir(files: set[FilePath]):
     io.print_info("All files are send to remote project dir")
 
 
-def update_remote_code(run_after_update: bool | None = True):
+def update_remote_code(run_after_update: bool = True):
     io.print_info("Start updating remote code")
 
     io.print_info("Look differences in local and remote files")

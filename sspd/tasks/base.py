@@ -7,8 +7,8 @@ import os
 REQUIREMENTS_FILE = FilePath("requirements.txt")
 
 
-def execute_remote_command(command: str, raise_on_error: bool | None = True,
-                           print_request: bool | None = True, print_response: bool | None = True) -> tuple[int, str]:
+def execute_remote_command(command: str, raise_on_error: bool = True,
+                           print_request: bool = True, print_response: bool = True) -> tuple[int, str]:
     if print_request:
         io.print_request(command)
 
@@ -68,24 +68,24 @@ def send_file_to_remote_server(local_filepath: str, remote_filepath: str):
         raise exceptions.SSPDUnhandleableException(f"No such file '{local_filepath}' in local machine")
 
 
-def stop_running_remote_code(raise_on_error: bool | None = True) -> tuple[int, str]:
+def stop_running_remote_code(raise_on_error: bool = True) -> tuple[int, str]:
     io.print_info("Stop running remote py code")
     return execute_remote_command(f"sudo systemctl stop {base.REMOTE_SERVICE_FILENAME}", raise_on_error=raise_on_error)
 
 
-def start_running_remote_code(raise_on_error: bool | None = True) -> tuple[int, str]:
+def start_running_remote_code(raise_on_error: bool = True) -> tuple[int, str]:
     io.print_info("Start running remote py code")
     return execute_remote_command(f"sudo systemctl start {base.REMOTE_SERVICE_FILENAME}", raise_on_error=raise_on_error)
 
 
-def restart_running_remote_code(raise_on_error: bool | None = True) -> tuple[int, str]:
+def restart_running_remote_code(raise_on_error: bool = True) -> tuple[int, str]:
     io.print_info("Reload daemons")
     execute_remote_command(f"sudo systemctl daemon-reload")
     io.print_info("Restart running remote py code")
     return execute_remote_command(f"sudo systemctl restart {base.REMOTE_SERVICE_FILENAME}", raise_on_error=raise_on_error)
 
 
-def run_reinstalling_remote_requirements(raise_on_error: bool | None = True) -> tuple[int, str]:
+def run_reinstalling_remote_requirements(raise_on_error: bool = True) -> tuple[int, str]:
     io.print_info(f"Try to reinstall requirements in remote '{base.CORE_VENV_DIR_NAME}'")
     return execute_remote_command((
         f"{base.REMOTE_PROJECT_DIR_PATH}/{base.CORE_VENV_DIR_NAME}/bin/pip"

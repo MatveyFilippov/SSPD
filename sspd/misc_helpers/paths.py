@@ -7,9 +7,9 @@ def split_filepath(filepath: str) -> list[str]:
     parts = re.split(r"(/|\\)+", filepath)
     result = []
     for part in parts:
-        if not part.strip() or part.count("/") or part.count("\\"):
+        if part.strip() == "" or part.count("/") or part.count("\\"):
             continue
-        result.append(part.strip())
+        result.append(part)
     return result
 
 
@@ -66,6 +66,8 @@ class FilePath:
         return FilePath(*(self.__ABSTRACT_PATH[:-1]))
 
     @classmethod
-    def from_filepath(cls, filepath: str, project_folderpath: str | None = "") -> 'FilePath':
+    def from_filepath(cls, filepath: str, project_folderpath: str = "") -> 'FilePath':
+        if project_folderpath == ".":
+            project_folderpath = ""
         filepath = filepath.removeprefix(project_folderpath)
         return cls(*tuple(part for part in split_filepath(filepath)))

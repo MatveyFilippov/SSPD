@@ -41,14 +41,12 @@ class IgnoreFile:
             return pathspec.PathSpec.from_lines('gitwildmatch', file)
 
     def __init__(self, ignore_filepath: str, project_path: str):
-        project_path = project_path.strip()
         if not project_path.endswith(os.path.sep):
             project_path += os.path.sep
         if not (os.path.exists(project_path) and os.path.isdir(project_path)):
             raise FileNotFoundError(f"Can't find project dir '{project_path}'")
         self._PROJECT_DIR_PATH = project_path
 
-        ignore_filepath = ignore_filepath.strip()
         is_file_exists = os.path.exists(ignore_filepath)
         if not is_file_exists:
             is_file_exists = init_default_ignore_file(ignore_filepath)
