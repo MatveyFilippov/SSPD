@@ -58,7 +58,16 @@ def download_folder_from_remote_server(remote_folderpath: str, local_folderpath:
             download_file_from_remote_server(remote_path, local_path)
 
 
+def create_folder_in_remote_server(remote_folderpath: str):
+    if not checker.is_remote_dir(remote_folderpath):
+        # base.SFTP_REMOTE_MACHINE.mkdir(remote_folderpath)
+        io.print_info(f"Creating remote folder '{remote_folderpath}'")
+        execute_remote_command(f"mkdir -p {remote_folderpath}")
+        io.print_info("Success")
+
+
 def send_file_to_remote_server(local_filepath: str, remote_filepath: str):
+    create_folder_in_remote_server(os.path.dirname(remote_filepath))
     try:
         io.print_info(f"Sending '{local_filepath}' to '{remote_filepath}'")
         with open(local_filepath, "rb") as file:
@@ -66,6 +75,35 @@ def send_file_to_remote_server(local_filepath: str, remote_filepath: str):
         io.print_info("Success")
     except FileNotFoundError:
         raise exceptions.SSPDUnhandleableException(f"No such file '{local_filepath}' in local machine")
+
+
+def send_folder_to_remote_server(local_folderpath: str, remote_folderpath: str):
+    create_folder_in_remote_server(remote_folderpath)
+    for item in os.listdir(local_folderpath):
+        local_path = os.path.join(local_folderpath, item)
+        remote_path = os.path.join(remote_folderpath, item)
+        if os.path.isdir(local_path):
+            send_folder_to_remote_server(local_path, remote_path)
+        else:
+            send_file_to_remote_server(local_path, remote_path)
+
+
+def delete_file_in_remote_server(remote_filepath: str):
+    io.print_info(f"Deleting remote file '{remote_filepath}'")
+    if not checker.is_remote_file(remote_filepath):
+        raise exceptions.SSPDUnhandleableException(f"No such file '{remote_filepath}' in remote machine")
+    base.SFTP_REMOTE_MACHINE.remove(remote_filepath)
+    io.print_info("Success")
+
+
+def delete_folder_in_remote_server(remote_folderpath: str):
+    for item in base.SFTP_REMOTE_MACHINE.listdir(remote_folderpath):
+        if checker.is_remote_dir(item):
+            delete_folder_in_remote_server(remote_folderpath)
+        delete_file_in_remote_server(item)
+    io.print_info(f"Deleting remote folder '{remote_folderpath}'")
+    base.SFTP_REMOTE_MACHINE.rmdir(remote_folderpath)
+    io.print_info("Success")
 
 
 def stop_running_remote_code(raise_on_error: bool = True) -> tuple[int, str]:

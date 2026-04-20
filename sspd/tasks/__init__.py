@@ -1,7 +1,8 @@
 from .base import (
-    download_file_from_remote_server, download_folder_from_remote_server, execute_remote_command,
+    download_file_from_remote_server, download_folder_from_remote_server, delete_folder_in_remote_server,
+    delete_file_in_remote_server, create_folder_in_remote_server, execute_remote_command,
     restart_running_remote_code, run_reinstalling_remote_requirements, send_file_to_remote_server,
-    start_running_remote_code, stop_running_remote_code,
+    send_folder_to_remote_server, start_running_remote_code, stop_running_remote_code,
 )
 from .file_analysing import FileAnalysing
 from .mastered import (
