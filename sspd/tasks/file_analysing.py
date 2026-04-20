@@ -107,6 +107,9 @@ class FileAnalysing:
 
     @classmethod
     def get_deleted_files(cls) -> set[FilePath]:
-        # TODO: you can look, that remote file not in local files (as in `new_files` but reversed)
-        # but here is problem - remote project can create special files, so them will be always deleted
+        if not cls.__deleted_files:
+            for filename in cls.REMOTE_FILES:
+                if filename not in cls.LOCAL_FILES:
+                    cls.__deleted_files.add(filename)
+
         return cls.__deleted_files.copy()
