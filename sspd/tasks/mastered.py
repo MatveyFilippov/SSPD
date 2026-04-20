@@ -3,7 +3,6 @@ from .file_analysing import FileAnalysing
 from .. import base as sspd_properties, checker, exceptions
 from ..utils import io
 from ..utils.paths import FilePath
-import os
 
 
 def download_log_file():
@@ -19,11 +18,16 @@ def send_files_from_project_dir(files: set[FilePath]):
     for file in files:
         local_filepath = file.to_absolute(sspd_properties.LOCAL_PROJECT_DIR_PATH)
         remote_filepath = file.to_absolute(sspd_properties.REMOTE_PROJECT_DIR_PATH)
-        base.execute_remote_command(
-            f"mkdir -p {os.path.dirname(remote_filepath)}", print_request=False, print_response=False,
-        )
         base.send_file_to_remote_server(local_filepath, remote_filepath)
     io.print_info("All files are send to remote project dir")
+
+
+def delete_files_from_project_dir(files: set[FilePath]):
+    io.print_info("Start deleting files in remote project dir")
+    for file in files:
+        remote_filepath = file.to_absolute(sspd_properties.REMOTE_PROJECT_DIR_PATH)
+        base.delete_file_in_remote_server(remote_filepath)
+    io.print_info("All files are delete in remote project dir")
 
 
 def update_remote_code(run_after_update: bool = True):
@@ -33,14 +37,18 @@ def update_remote_code(run_after_update: bool = True):
     FileAnalysing.refresh()
 
     files2send = set()
+    files2delete = set()
     for created_file in FileAnalysing.get_created_files():
         files2send.add(created_file)
         io.print_info(f" * Create: {created_file}")
     for updated_file in FileAnalysing.get_updated_files():
         files2send.add(updated_file)
         io.print_info(f" * Update: {updated_file}")
-    if len(files2send) == 0:
-        io.print_info("All files up to date!")
+    for deleted_file in FileAnalysing.get_deleted_files():
+        files2delete.add(deleted_file)
+        io.print_info(f" * Delete: {deleted_file}")
+    if len(files2send) == 0 and len(files2delete) == 0:
+        io.print_info("Remote project up to date!")
         return
 
     if io.input_bool("Are you sure to send all this files to remote server? (y/{sign2break}): ", sign2break="N"):
@@ -54,8 +62,11 @@ def update_remote_code(run_after_update: bool = True):
             raise exceptions.SSPDUnhandleableException(response)
 
     send_files_from_project_dir(files2send)
+    delete_files_from_project_dir(files2delete)
+
     if base.REQUIREMENTS_FILE in files2send:
         base.run_reinstalling_remote_requirements()
+
     if run_after_update:
         base.start_running_remote_code()
 
