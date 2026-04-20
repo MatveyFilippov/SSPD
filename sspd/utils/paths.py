@@ -13,6 +13,16 @@ def split_filepath(filepath: str) -> list[str]:
     return result
 
 
+@lru_cache(maxsize=1_000)
+def normalize_path(path: str, save_prefix: bool = False, save_suffix: bool = False) -> str:
+    path = path.replace("\\", "/")
+    while not save_prefix and path.startswith("/"):
+        path = path.removeprefix("/")
+    while not save_suffix and path.endswith("/"):
+        path = path.removesuffix("/")
+    return path
+
+
 class FilePath:
     def __init__(self, *paths_from_project_dir: str):
         if len(paths_from_project_dir) < 1:

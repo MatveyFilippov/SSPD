@@ -1,17 +1,8 @@
 from . import exceptions
-from .utils import config_file, ignoring_file
+from .utils import config_file, ignoring_file, paths
 import paramiko
 from paramiko.config import SSH_PORT
 import os
-
-
-def normalize_path(path: str, save_prefix: bool = False, save_suffix: bool = False) -> str:
-    path = path.replace("\\", "/")
-    while not save_prefix and path.startswith("/"):
-        path = path.removeprefix("/")
-    while not save_suffix and path.endswith("/"):
-        path = path.removesuffix("/")
-    return path
 
 
 PROPERTIES_DIR = "SSPDFiles"
@@ -36,10 +27,10 @@ REMOTE_MACHINE_PASSWORD = config.get(section="RemoteMachine", option="PASSWORD")
 
 # CoreProject settings
 CORE_PROJECT_FILE_TO_RUN = config.get(section="CoreProject", option="FILE_TO_RUN")
-CORE_VENV_DIR_NAME = normalize_path(config.get_optional(section="CoreProject", option="VENV_DIR_NAME", default_value=".venv"))
+CORE_VENV_DIR_NAME = paths.normalize_path(config.get_optional(section="CoreProject", option="VENV_DIR_NAME", default_value=".venv"))
 
 # RemoteProject settings
-REMOTE_PROJECT_DIR_PATH = normalize_path(tilda_replacer(config.get(section="RemoteProject", option="DIR_PATH")), save_prefix=True)
+REMOTE_PROJECT_DIR_PATH = paths.normalize_path(tilda_replacer(config.get(section="RemoteProject", option="DIR_PATH")), save_prefix=True)
 REMOTE_SERVICE_FILENAME = config.get(section="RemoteProject", option="SERVICE_FILENAME")
 REMOTE_PATH_TO_SERVICES_DIR = "/etc/systemd/system/"
 REMOTE_LOG_FILE_PATH = config.get_optional(section="RemoteProject", option="LOG_FILE_PATH")
@@ -47,7 +38,7 @@ if REMOTE_LOG_FILE_PATH:
     REMOTE_LOG_FILE_PATH = tilda_replacer(REMOTE_LOG_FILE_PATH)
 
 # LocalProject settings
-LOCAL_PROJECT_DIR_PATH = normalize_path(config.get(section="LocalProject", option="DIR_PATH"), save_prefix=True)
+LOCAL_PROJECT_DIR_PATH = paths.normalize_path(config.get(section="LocalProject", option="DIR_PATH"), save_prefix=True)
 LOCAL_LOG_FILE_PATH_TO_DOWNLOAD_IN = config.get_optional(section="LocalProject", option="LOG_FILE_PATH_TO_DOWNLOAD_IN")
 LOCAL_SERVICE_CONTENT_PATH = config.get_optional(section="LocalProject", option="SERVICE_CONTENT_PATH")
 LOCAL_IGNORE_FILE_PATH = config.get_optional(section="LocalProject", option="IGNORE_FILE_PATH", default_value=os.path.join(PROPERTIES_DIR, "ProjectDelivery.ignore"), set_default_value_if_not_exists=False)
