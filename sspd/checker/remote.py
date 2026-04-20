@@ -1,5 +1,5 @@
 from .. import base, exceptions
-from ..misc_helpers import io
+from ..utils import io
 import os
 from stat import S_ISDIR, S_ISREG
 

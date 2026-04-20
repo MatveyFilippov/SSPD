@@ -1,8 +1,8 @@
 from . import base
 from .file_analysing import FileAnalysing
 from .. import base as sspd_properties, checker, exceptions
-from ..misc_helpers import io
-from ..misc_helpers.paths import FilePath
+from ..utils import io
+from ..utils.paths import FilePath
 import os
 
 

@@ -1,5 +1,5 @@
 from . import exceptions
-from .misc_helpers import config_file, ignoring_file
+from .utils import config_file, ignoring_file
 import paramiko
 from paramiko.config import SSH_PORT
 import os

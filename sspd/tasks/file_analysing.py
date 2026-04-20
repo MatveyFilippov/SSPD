@@ -1,5 +1,5 @@
 from .. import base, checker, exceptions
-from ..misc_helpers.paths import FilePath
+from ..utils.paths import FilePath
 from functools import lru_cache
 import hashlib
 import os
