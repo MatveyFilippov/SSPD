@@ -8,7 +8,7 @@ Lib can:
 * install requirements
 * create service file
 * upload files that was changed or not exists
-* start and stop control
+* start|stop|reload running code
 * execute your personal commands
 * ...
 
@@ -25,11 +25,11 @@ or install old version from [dist](dist)
 import sspd
 
 try:
-    sspd.tasks.update_remote_code()
+    sspd.tasks.update_remote_project()
 finally:
     sspd.close_connections()
 ```
-It will ask you about properties and create `.ini` & `.ign` files
+It will ask you about properties and create `.ini` & `.ignore` files
 
 
 ### More examples
@@ -47,7 +47,7 @@ from typing import NoReturn
 
 class Direction(Enum):
     EXIT = 0
-    UPDATE_CODE = auto()
+    PUSH_PROJECT = auto()
     DOWNLOAD_LOG_FILE = auto()
     STOP_RUNNING = auto()
     START_RUNNING = auto()
@@ -69,27 +69,26 @@ class Direction(Enum):
 
 def delete_not_required_data():
     """Custom sspd task"""
-    sspd.tasks.stop_running_remote_code()
-    sspd.tasks.execute_remote_command(
+    sspd.tasks.stop_running_remote_service()
+    sspd.tasks.execute_command_in_remote_machine(
         command=f"cd /homer/datas && mv new.homer old.homer",
-        print_request=False, print_response=False,
+        print_request=False, print_response=False
     )
-    status, response = sspd.tasks.execute_remote_command(
-        command=f"{sspd.base.REMOTE_PROJECT_DIR_PATH}/UserCaches clean",
-        raise_on_error=False,
+    status, response = sspd.tasks.execute_command_in_remote_machine(
+        command=f"{sspd.base.REMOTE_PROJECT_DIR_PATH}/UserCaches clean", raise_on_error=False
     )
     if status == -1:
         print(f"Something went wrong: {response}")
-    sspd.tasks.start_running_remote_code()
+    sspd.tasks.start_running_remote_service()
 
 
 HANDLERS = {
     Direction.EXIT: lambda: None,
-    Direction.UPDATE_CODE: sspd.tasks.update_remote_code,
+    Direction.PUSH_PROJECT: sspd.tasks.update_remote_project,
     Direction.DELETE_NOT_REQUIRED_DATA: delete_not_required_data,
-    Direction.START_RUNNING: sspd.tasks.start_running_remote_code,
-    Direction.STOP_RUNNING: sspd.tasks.stop_running_remote_code,
-    Direction.DOWNLOAD_LOG_FILE: sspd.tasks.download_log_file,
+    Direction.START_RUNNING: sspd.tasks.start_running_remote_service,
+    Direction.STOP_RUNNING: sspd.tasks.stop_running_remote_service,
+    Direction.DOWNLOAD_LOG_FILE: sspd.tasks.download_log_file_from_remote_machine,
 }
 
 
