@@ -51,7 +51,7 @@ def update_remote_project(run_after_update: bool = True):
         io.print_info("Remote project up to date!")
         return
 
-    if io.input_bool("Are you sure to send all this files to remote server? (y/{sign2break}): ", sign2break="N"):
+    if io.input_bool("Are you sure to update remote project? (y/{sign2break}): ", sign2break="N"):
         io.print_info("Break process...")
         return
 
@@ -61,8 +61,10 @@ def update_remote_project(run_after_update: bool = True):
         if io.input_bool("ENTER (to continue) / '{sign2break}' (to break): ", sign2break="Br"):
             raise exceptions.SSPDUnhandleableException(response)
 
-    send_files_to_remote_project(files2send)
-    delete_files_in_remote_project_dir(files2delete)
+    if files2send:
+        send_files_to_remote_project(files2send)
+    if files2delete:
+        delete_files_in_remote_project_dir(files2delete)
 
     if base.REQUIREMENTS_FILE in files2send:
         base.run_installing_requirements_in_remote_machine()
