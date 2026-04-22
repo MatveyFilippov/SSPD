@@ -20,19 +20,16 @@ def is_remote_file(path: str) -> bool:
         return False
 
 
-def __write_default_service() -> str:  # TODO: put service file as superuser (nano M.service -> sudo nano M.service)
-    service_filepath_created_by_base = os.path.join(
-        base.PROPERTIES_DIR, "SSPD_ServiceCreatedInRemoteMachine.service"
-    )
-    with open(service_filepath_created_by_base, "w") as default_service_file:
-        default_service_file.write(base.SERVICE_CONTENT)
-    with open(service_filepath_created_by_base, "rb") as default_service_file:
-        base.SFTP_REMOTE_MACHINE.putfo(
-            default_service_file, base.REMOTE_PATH_TO_SERVICES_DIR + base.REMOTE_SERVICE_FILENAME
-        )
+def __write_service(local_content_filepath: str | None = None) -> str:  # TODO: put service file as superuser (nano M.service -> sudo nano M.service)
+    if not local_content_filepath:
+        local_content_filepath = os.path.join(base.PROPERTIES_DIR, "SSPD_CopyOfCreatedServiceInRemoteMachine.service")
+        with open(local_content_filepath, "w") as service_file:
+            service_file.write(base.SERVICE_CONTENT)
+    with open(local_content_filepath, "rb") as service_file:
+        base.SFTP_REMOTE_MACHINE.putfo(service_file, base.REMOTE_PATH_TO_SERVICES_DIR + base.REMOTE_SERVICE_FILENAME)
     base.SSH_REMOTE_MACHINE.exec_command("sudo systemctl daemon-reload")
     base.SSH_REMOTE_MACHINE.exec_command(f"sudo systemctl enable {base.REMOTE_SERVICE_FILENAME}")
-    return service_filepath_created_by_base
+    return local_content_filepath
 
 
 def check_remote_project_dir():
@@ -72,12 +69,12 @@ def check_remote_service():
     except FileNotFoundError:
         er_text = f"File '{base.REMOTE_SERVICE_FILENAME}' (service) not exists in remote server"
         io.print_info(er_text)
-        if io.input_bool("Can I write default service by myself (y/{sign2ignore}): ", sign2ignore="N"):
+        if io.input_bool("Can I write service by myself (y/{sign2ignore}): ", sign2ignore="N"):
             raise exceptions.SSPDUnhandleableException(er_text)
-        local_service_cope_filepath = __write_default_service()
-        io.print_info(f"You can look copy of created service file in '{local_service_cope_filepath}'")
+        local_service_copy_filepath = __write_service(local_content_filepath=base.LOCAL_SERVICE_CONTENT_PATH)
+        io.print_info(f"You can look copy of created service file in '{local_service_copy_filepath}'")
     except ValueError:
         io.print_info(f"Content of '{base.REMOTE_SERVICE_FILENAME}' (service) is not actual in remote server")
-        if not io.input_bool("Can I rewrite default service by myself (y/{sign2ignore}): ", sign2ignore="N"):
-            local_service_cope_filepath = __write_default_service()
-            io.print_info(f"You can look copy of created service file in '{local_service_cope_filepath}'")
+        if not io.input_bool("Can I rewrite service by myself (y/{sign2ignore}): ", sign2ignore="N"):
+            local_service_copy_filepath = __write_service(local_content_filepath=base.LOCAL_SERVICE_CONTENT_PATH)
+            io.print_info(f"You can look copy of created service file in '{local_service_copy_filepath}'")
