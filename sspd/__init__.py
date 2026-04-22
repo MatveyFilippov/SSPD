@@ -1,6 +1,7 @@
 from . import base, checker as __checker, tasks
 from .base import close_connections
 from .checker import is_remote_dir, is_remote_file
+from .utils.paths import FilePath
 import logging as __logging
 
 
