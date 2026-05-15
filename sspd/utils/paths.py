@@ -2,15 +2,25 @@ from functools import lru_cache
 import re
 
 
-@lru_cache
+@lru_cache(maxsize=1_000)
 def split_filepath(filepath: str) -> list[str]:
     parts = re.split(r"(/|\\)+", filepath)
     result = []
     for part in parts:
-        if not part.strip() or part.count("/") or part.count("\\"):
+        if part.strip() == "" or part.count("/") or part.count("\\"):
             continue
-        result.append(part.strip())
+        result.append(part)
     return result
+
+
+@lru_cache(maxsize=1_000)
+def normalize_path(path: str, save_prefix: bool = False, save_suffix: bool = False) -> str:
+    path = path.replace("\\", "/")
+    while not save_prefix and path.startswith("/"):
+        path = path.removeprefix("/")
+    while not save_suffix and path.endswith("/"):
+        path = path.removesuffix("/")
+    return path
 
 
 class FilePath:
@@ -66,6 +76,8 @@ class FilePath:
         return FilePath(*(self.__ABSTRACT_PATH[:-1]))
 
     @classmethod
-    def from_filepath(cls, filepath: str, project_folderpath: str | None = "") -> 'FilePath':
+    def from_filepath(cls, filepath: str, project_folderpath: str = "") -> 'FilePath':
+        if project_folderpath == ".":
+            project_folderpath = ""
         filepath = filepath.removeprefix(project_folderpath)
         return cls(*tuple(part for part in split_filepath(filepath)))
