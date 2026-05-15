@@ -2,7 +2,7 @@
 
 [![Python Version](https://img.shields.io/badge/python-3.11+-blue.svg)](https://python.org)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-2.1.0--alpha-orange.svg)](https://github.com/MatveyFilippov/SSPD)
+[![Version](https://img.shields.io/badge/version-2.1.0-orange.svg)](https://github.com/MatveyFilippov/SSPD)
 
 A powerful Python tool for deploying and updating code on remote Unix servers via SSH/SCP. SSPD automates the entire deployment workflow including virtual environment setup, dependency installation, systemd service management, and intelligent file synchronization.
 
@@ -36,7 +36,7 @@ pip install -U git+https://github.com/MatveyFilippov/SSPD.git
 pip install -U git+https://github.com/MatveyFilippov/SSPD.git@v2.0.0
 ```
 
-Replace `v2.0.0` with any available tag (e.g., `v1.3.2`, `v2.1.0-alpha`).
+Replace `v2.0.0` with any available tag (e.g., `v1.3.2`, `v2.1.0`).
 Or download and install from [Built Distribution](dist).
 
 #### For development version:
