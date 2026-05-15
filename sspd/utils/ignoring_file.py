@@ -1,8 +1,8 @@
-from . import io
-from .paths import FilePath
 import os
 import sys
 import pathspec
+from . import io
+from .paths import FilePath
 
 
 DEFAULT_SSPD_IGN_CONTENT = """# List files and folders to ignore during SSH/SCP project delivery
@@ -34,10 +34,12 @@ __pycache__/
 
 
 def init_default_ignore_file(filepath: str) -> bool:
-    io.print_info(f"File '{os.path.join('...', os.path.sep + filepath)}' doesn't exist. Do you want to ignore any files?")
+    io.print_info(
+        f"File '{os.path.join('...', os.path.sep + filepath)}' doesn't exist. Do you want to ignore any files?",
+    )
     if io.input_bool(
-        "ENTER (to break process and fill ign file) / '{sign2continue}' (to continue without ignoring): ",
-        sign2continue="No",
+            "ENTER (to break process and fill ign file) / '{sign2continue}' (to continue without ignoring): ",
+            sign2continue="No",
     ):
         return False
     with open(filepath, "a+", encoding="UTF-8") as file:

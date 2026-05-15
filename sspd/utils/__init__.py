@@ -1,3 +1,3 @@
 from . import (
-    io, config_file, ignoring_file, paths,
+    config_file, ignoring_file, io, paths,
 )

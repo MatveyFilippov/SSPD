@@ -10,11 +10,13 @@ class Config(ABC):
 
     @overload
     @classmethod
-    def ask_value(cls, prompt: str, required_type: None = None) -> str: ...
+    def ask_value(cls, prompt: str, required_type: None = None) -> str:
+        ...
 
     @overload
     @classmethod
-    def ask_value(cls, prompt: str, required_type: type[_T]) -> _T: ...
+    def ask_value(cls, prompt: str, required_type: type[_T]) -> _T:
+        ...
 
     @classmethod
     def ask_value(cls, prompt: str, required_type: type[_T] | None = str) -> Any:
@@ -35,12 +37,21 @@ class Config(ABC):
         return NotImplemented
 
     @overload
-    def get(self, section: str, option: str, required_type: None = None, prompt_to_ask_value_if_not_exists: str = None) -> str: ...
+    def get(
+        self, section: str, option: str, required_type: None = None, prompt_to_ask_value_if_not_exists: str = None,
+    ) -> str:
+        ...
 
     @overload
-    def get(self, section: str, option: str, required_type: type[_T], prompt_to_ask_value_if_not_exists: str = None) -> _T: ...
+    def get(
+        self, section: str, option: str, required_type: type[_T], prompt_to_ask_value_if_not_exists: str = None,
+    ) -> _T:
+        ...
 
-    def get(self, section: str, option: str, required_type: type[_T] | None = str, prompt_to_ask_value_if_not_exists: str = None) -> Any:
+    def get(
+        self, section: str, option: str, required_type: type[_T] | None = str,
+        prompt_to_ask_value_if_not_exists: str = None,
+    ) -> Any:
         if required_type is None:
             required_type = str
         try:
@@ -52,12 +63,20 @@ class Config(ABC):
             return self.set(section=section, option=option, value=value)
 
     @overload
-    def get_optional(self, section: str, option: str, default_value: None = None, set_default_value_if_not_exists: bool = True) -> Any | None: ...
+    def get_optional(
+        self, section: str, option: str, default_value: None = None, set_default_value_if_not_exists: bool = True,
+    ) -> Any | None:
+        ...
 
     @overload
-    def get_optional(self, section: str, option: str, default_value: _T, set_default_value_if_not_exists: bool = True) -> _T: ...
+    def get_optional(
+        self, section: str, option: str, default_value: _T, set_default_value_if_not_exists: bool = True,
+    ) -> _T:
+        ...
 
-    def get_optional(self, section: str, option: str, default_value: _T | None = None, set_default_value_if_not_exists: bool = True) -> Any:
+    def get_optional(
+        self, section: str, option: str, default_value: _T | None = None, set_default_value_if_not_exists: bool = True,
+    ) -> Any:
         try:
             return self._get_or_raise_key_error(section=section, option=option)
         except KeyError:
@@ -83,7 +102,7 @@ class ConfigFile(Config):
         except (configparser.NoSectionError, configparser.NoOptionError):
             raise KeyError(f"{section}<{option}> not exists")
 
-    def set(self, section: str, option: str, value: Config._T) ->  Config._T:
+    def set(self, section: str, option: str, value: Config._T) -> Config._T:
         sections = self.__CONFIG.sections()
         if section not in sections:
             self.__CONFIG.add_section(section)
@@ -94,6 +113,7 @@ class ConfigFile(Config):
 
     def is_exists(self, section: str, option: str) -> bool:
         return self.__CONFIG.has_option(section, option)
+
 
 class ConfigJSON(Config):
     def __init__(self, json_filepath: str):
@@ -112,7 +132,7 @@ class ConfigJSON(Config):
             raise KeyError(f"{section}<{option}> not exists")
         return self.__CONFIG[section][option]
 
-    def set(self, section: str, option: str, value: Config._T) ->  Config._T:
+    def set(self, section: str, option: str, value: Config._T) -> Config._T:
         if section not in self.__CONFIG:
             self.__CONFIG[section] = dict()
         self.__CONFIG[section][option] = value

@@ -1,13 +1,15 @@
+import os
 from .. import base
 from ..utils import io
-import os
 
 
 def is_download_log_file_available() -> bool:
     if not base.REMOTE_LOG_FILE_PATH:
-        base.REMOTE_LOG_FILE_PATH = base.tilda_replacer(base.config.get(
-            section="RemoteProject", option="LOG_FILE_PATH",
-        ))
+        base.REMOTE_LOG_FILE_PATH = base.tilda_replacer(
+            base.config.get(
+                section="RemoteProject", option="LOG_FILE_PATH",
+            ),
+        )
     if not base.LOCAL_LOG_FILE_PATH_TO_DOWNLOAD_IN:
         base.LOCAL_LOG_FILE_PATH_TO_DOWNLOAD_IN = base.config.get(
             section="LocalProject", option="LOG_FILE_PATH_TO_DOWNLOAD_IN",
