@@ -10,15 +10,26 @@ DEFAULT_SSPD_IGN_CONTENT = """# List files and folders to ignore during SSH/SCP 
 # gitignore-style patterns are supported
 
 # For example:
+*.md
+
+# Python
+__pycache__/
+*.pyc
+/.venv/
+/venv/
+
+# IDE
+.idea/
+.vscode/
+
+# SSPD
 /SSPDFiles/
+
+# System
+.DS_Store
+*.log
 .git/
 .gitignore
-/venv/
-/.venv/
-/.idea/
-__pycache__/
-.DS_Store
-/README.md
 """
 
 
