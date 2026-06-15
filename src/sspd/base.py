@@ -1,7 +1,6 @@
 import os
 import paramiko
 from paramiko.config import SSH_PORT
-from . import exceptions
 from .utils import config_file, ignoring_file, paths
 
 

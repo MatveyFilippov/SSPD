@@ -1,7 +1,7 @@
 """SSH/SCP Project Delivery"""
 
-from .__version__ import __version__, __version_info__
 from . import base, tasks
+from .__version__ import __version__, __version_info__
 from .base import close_connections
 from .checker import is_remote_dir, is_remote_file
 from .utils.paths import FilePath
@@ -18,8 +18,8 @@ __all__ = [
     "FilePath",
 ]
 
-
 from . import checker as __checker
+
 
 __checker.check_local_project_dir()
 __checker.check_remote_project_dir()
