@@ -1,14 +1,16 @@
+import os
 from .. import base, checker, exceptions
 from ..utils import io
 from ..utils.paths import FilePath
-import os
 
 
 REQUIREMENTS_FILE = FilePath("requirements.txt")
 
 
-def execute_command_in_remote_machine(command: str, raise_on_error: bool = True,
-                                      print_request: bool = True, print_response: bool = True) -> tuple[int, str]:
+def execute_command_in_remote_machine(
+    command: str, raise_on_error: bool = True,
+    print_request: bool = True, print_response: bool = True,
+) -> tuple[int, str]:
     if print_request:
         io.print_request(command)
 

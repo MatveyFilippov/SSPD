@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sspd"
-version = "2.1.0"
+version = "2.1.1"
 description = "SSH/SCP Project Delivery"
 readme = "README.md"
 authors = [

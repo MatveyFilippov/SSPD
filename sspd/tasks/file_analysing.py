@@ -1,9 +1,9 @@
-from . import base
-from .. import base as sspd_properties, checker, exceptions
-from ..utils.paths import FilePath
 from functools import lru_cache
 import hashlib
 import os
+from . import base
+from .. import base as sspd_properties, checker, exceptions
+from ..utils.paths import FilePath
 
 
 @lru_cache(maxsize=1_000)
@@ -61,13 +61,19 @@ class FileAnalysing:
         for current_dir, subdirs, files in os.walk(sspd_properties.LOCAL_PROJECT_DIR_PATH):
             kept_subdirs = []
             for subdir in subdirs:
-                filepath = FilePath.from_filepath(filepath=os.path.join(current_dir, subdir), project_folderpath=sspd_properties.LOCAL_PROJECT_DIR_PATH)
+                filepath = FilePath.from_filepath(
+                    filepath=os.path.join(current_dir, subdir),
+                    project_folderpath=sspd_properties.LOCAL_PROJECT_DIR_PATH,
+                )
                 if not sspd_properties.IGNORE.is_path_ignored(filepath) and filepath != cls.CORE_VENV_FILEPATH:
                     kept_subdirs.append(subdir)
             subdirs[:] = kept_subdirs
 
             for file in files:
-                filepath = FilePath.from_filepath(filepath=os.path.join(current_dir, file), project_folderpath=sspd_properties.LOCAL_PROJECT_DIR_PATH)
+                filepath = FilePath.from_filepath(
+                    filepath=os.path.join(current_dir, file),
+                    project_folderpath=sspd_properties.LOCAL_PROJECT_DIR_PATH,
+                )
                 if not sspd_properties.IGNORE.is_path_ignored(filepath):
                     cls.LOCAL_FILES.add(filepath)
 
@@ -77,10 +83,15 @@ class FileAnalysing:
             result = set()
             try:
                 for file in sspd_properties.SFTP_REMOTE_MACHINE.listdir(root):
-                    filepath = FilePath.from_filepath(filepath=(root + "/" + file), project_folderpath=sspd_properties.REMOTE_PROJECT_DIR_PATH)
+                    filepath = FilePath.from_filepath(
+                        filepath=(root + "/" + file),
+                        project_folderpath=sspd_properties.REMOTE_PROJECT_DIR_PATH,
+                    )
                     if sspd_properties.IGNORE.is_path_ignored(filepath) or filepath == cls.CORE_VENV_FILEPATH:
                         continue
-                    remote_absolute_path = filepath.to_absolute(project_folderpath=sspd_properties.REMOTE_PROJECT_DIR_PATH)
+                    remote_absolute_path = filepath.to_absolute(
+                        project_folderpath=sspd_properties.REMOTE_PROJECT_DIR_PATH,
+                    )
                     if checker.is_remote_dir(remote_absolute_path):
                         result.update(get_filepaths_in_remote_dir(root=remote_absolute_path))
                     elif checker.is_remote_file(remote_absolute_path):

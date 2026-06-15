@@ -1,7 +1,7 @@
-from .. import base, exceptions
-from ..utils import io
 import os
 from stat import S_ISDIR, S_ISREG
+from .. import base, exceptions
+from ..utils import io
 
 
 def is_remote_dir(path: str) -> bool:
@@ -37,27 +37,27 @@ def check_remote_project_dir():
         base.SSH_REMOTE_MACHINE.exec_command(f"mkdir -p {base.REMOTE_PROJECT_DIR_PATH}")
         if not is_remote_dir(base.REMOTE_PROJECT_DIR_PATH):
             raise exceptions.SSPDUnhandleableException(
-                f"No working dir ('{base.REMOTE_PROJECT_DIR_PATH}') in remote server"
+                f"No working dir ('{base.REMOTE_PROJECT_DIR_PATH}') in remote server",
             )
 
 
 def check_remote_venv():
     for i in range(2):
         _, _, stderr = base.SSH_REMOTE_MACHINE.exec_command(
-            f"source {base.REMOTE_PROJECT_DIR_PATH}/{base.CORE_VENV_DIR_NAME}/bin/activate"
+            f"source {base.REMOTE_PROJECT_DIR_PATH}/{base.CORE_VENV_DIR_NAME}/bin/activate",
         )
         if "No such file or directory" in stderr.read().decode():
             if i == 0:
                 io.print_info(f"Creating '{base.CORE_VENV_DIR_NAME}' in remote project dir...")
                 _, _, stderr = base.SSH_REMOTE_MACHINE.exec_command(
-                    f"python3 -m venv {base.REMOTE_PROJECT_DIR_PATH}/{base.CORE_VENV_DIR_NAME}"
+                    f"python3 -m venv {base.REMOTE_PROJECT_DIR_PATH}/{base.CORE_VENV_DIR_NAME}",
                 )
                 er_text = stderr.read()
                 if er_text:
                     raise exceptions.SSPDUnhandleableException(er_text)
             else:
                 raise exceptions.SSPDUnhandleableException(
-                    f"Virtual environment not exists in working dir '{base.REMOTE_PROJECT_DIR_PATH}'"
+                    f"Virtual environment not exists in working dir '{base.REMOTE_PROJECT_DIR_PATH}'",
                 )
 
 

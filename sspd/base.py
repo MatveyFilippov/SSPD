@@ -1,13 +1,12 @@
-from . import exceptions
-from .utils import config_file, ignoring_file, paths
+import os
 import paramiko
 from paramiko.config import SSH_PORT
-import os
+from . import exceptions
+from .utils import config_file, ignoring_file, paths
 
 
 PROPERTIES_DIR = "SSPDFiles"
 os.makedirs(PROPERTIES_DIR, exist_ok=True)
-
 
 # Get SSPD user settings
 config_filepath = os.path.join(PROPERTIES_DIR, "ProjectDelivery.ini")
@@ -47,9 +46,8 @@ LOCAL_IGNORE_FILE_PATH = config.get_optional(section="LocalProject", option="IGN
 # Get filepaths to ignore in SSPD process
 IGNORE = ignoring_file.IgnoreFile(
     ignore_filepath=LOCAL_IGNORE_FILE_PATH,
-    project_path=LOCAL_PROJECT_DIR_PATH
+    project_path=LOCAL_PROJECT_DIR_PATH,
 )
-
 
 # Init SSH
 SSH_REMOTE_MACHINE = paramiko.SSHClient()
@@ -67,7 +65,6 @@ except paramiko.AuthenticationException:
 
 # Init SCP
 SFTP_REMOTE_MACHINE = SSH_REMOTE_MACHINE.open_sftp()
-
 
 local_service_content = None
 if LOCAL_SERVICE_CONTENT_PATH:
