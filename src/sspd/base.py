@@ -53,16 +53,14 @@ IGNORE = ignoring_file.IgnoreFile(
 SSH_REMOTE_MACHINE = paramiko.SSHClient()
 SSH_REMOTE_MACHINE.load_system_host_keys()
 SSH_REMOTE_MACHINE.set_missing_host_key_policy(paramiko.RejectPolicy)
-try:
-    # Connect to server
-    SSH_REMOTE_MACHINE.connect(
-        hostname=REMOTE_MACHINE_HOST,
-        port=REMOTE_MACHINE_PORT,
-        username=REMOTE_USERNAME,
-        password=REMOTE_MACHINE_PASSWORD,
-    )
-except paramiko.AuthenticationException:
-    raise exceptions.SSPDExceptionWithoutClosingConnection("Invalid USERNAME or PASSWORD")
+
+# Connect to server
+SSH_REMOTE_MACHINE.connect(  # TODO: catch and process exceptions
+    hostname=REMOTE_MACHINE_HOST,
+    port=REMOTE_MACHINE_PORT,
+    username=REMOTE_USERNAME,
+    password=REMOTE_MACHINE_PASSWORD,
+)
 
 # Init SCP
 SFTP_REMOTE_MACHINE = SSH_REMOTE_MACHINE.open_sftp()

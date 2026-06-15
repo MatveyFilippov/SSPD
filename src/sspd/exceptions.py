@@ -1,11 +1,6 @@
 import sys
 
 
-class SSPDExceptionWithoutClosingConnection(Exception):
-    def __init__(self, text: str):
-        super().__init__(text)
-
-
 class SSPDUnhandleableException(SystemExit):
     def __init__(self, text: str):
         from .base import close_connections

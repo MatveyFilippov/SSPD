@@ -1,12 +1,13 @@
 [build-system]
-requires = ["setuptools>=61.0.0", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling>=1.0.0"]
+build-backend = "hatchling.build"
 
 [project]
 name = "sspd"
 version = "2.1.1"
 description = "SSH/SCP Project Delivery"
 readme = "README.md"
+requires-python = ">=3.11"
 authors = [
     { name = "homer", email = "mdfilippov_2@edu.hse.ru" }
 ]
@@ -24,8 +25,8 @@ dependencies = [
 [project.urls]
 GitHub = "https://github.com/MatveyFilippov/SSPD"
 
-[tool.setuptools]
-packages = { find = {} }
+[tool.hatch.build.targets.wheel]
+packages = ["src/sspd"]
 
 # pip install -U build
 # python -m build
