@@ -64,8 +64,8 @@ finally:
 SSPD's modular design allows you to create sophisticated deployment pipelines:
 
 ```python
-import sspd
 from enum import Enum, auto
+import sys
 from typing import NoReturn
 
 
@@ -73,8 +73,8 @@ class Direction(Enum):
     EXIT = 0
     PUSH_PROJECT = auto()
     PULL_LOGS = auto()
-    STOP_RUNNING = auto()
     START_RUNNING = auto()
+    STOP_RUNNING = auto()
     DELETE_NOT_REQUIRED_DATA = auto()
 
     @classmethod
@@ -94,41 +94,39 @@ class Direction(Enum):
 def delete_not_required_data():
     """Custom sspd task"""
     sspd.tasks.stop_running_remote_service()
-    sspd.tasks.execute_command_in_remote_machine(
-        command=f"cd /homer/datas && mv new.homer old.homer",
-        print_request=False, print_response=False
-    )
+    remote_cache_dir_path = f"{sspd.base.REMOTE_PROJECT_DIR_PATH}/cache"
     status, response = sspd.tasks.execute_command_in_remote_machine(
-        command=f"{sspd.base.REMOTE_PROJECT_DIR_PATH}/UserCaches clean", raise_on_error=False
+        command=f"cp {remote_cache_dir_path}/alla.new /homer/all.old && rm -rf {remote_cache_dir_path}",
+        print_request=False, print_response=False,
     )
     if status == -1:
         print(f"Something went wrong: {response}")
     sspd.tasks.start_running_remote_service()
 
 
-HANDLERS = {
-    Direction.EXIT: lambda: None,
-    Direction.PUSH_PROJECT: sspd.tasks.update_remote_project,
-    Direction.DELETE_NOT_REQUIRED_DATA: delete_not_required_data,
-    Direction.START_RUNNING: sspd.tasks.start_running_remote_service,
-    Direction.STOP_RUNNING: sspd.tasks.stop_running_remote_service,
-    Direction.PULL_LOGS: sspd.tasks.download_log_file_from_remote_machine,
-}
-
-
 def main() -> NoReturn:
     try:
         while True:
-            user_decision = Direction.get_direction()
-            if user_decision == Direction.EXIT:
-                break
-            HANDLERS[user_decision]()
+            match Direction.get_direction():
+                case Direction.EXIT:
+                    sys.exit(0)
+                case Direction.PUSH_PROJECT:
+                    sspd.tasks.update_remote_project()
+                case Direction.PULL_LOGS:
+                    sspd.tasks.download_log_file_from_remote_machine()
+                case Direction.START_RUNNING:
+                    sspd.tasks.start_running_remote_service()
+                case Direction.STOP_RUNNING:
+                    sspd.tasks.stop_running_remote_service()
+                case Direction.DELETE_NOT_REQUIRED_DATA:
+                    delete_not_required_data()
             print()
     finally:
         sspd.close_connections()
 
 
 if __name__ == "__main__":
+    import sspd
     main()
 ```
 
