@@ -51,7 +51,8 @@ IGNORE = ignoring_file.IgnoreFile(
 
 # Init SSH
 SSH_REMOTE_MACHINE = paramiko.SSHClient()
-SSH_REMOTE_MACHINE.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+SSH_REMOTE_MACHINE.load_system_host_keys()
+SSH_REMOTE_MACHINE.set_missing_host_key_policy(paramiko.RejectPolicy)
 try:
     # Connect to server
     SSH_REMOTE_MACHINE.connect(
