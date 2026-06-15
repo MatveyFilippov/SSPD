@@ -37,7 +37,6 @@ pip install git+https://github.com/MatveyFilippov/SSPD.git@v2.0.0
 ```
 
 Replace `v2.0.0` with any available tag (e.g., `v1.3.2`, `v2.1.0`).
-Or download and install from [Built Distribution](dist).
 
 #### For development version:
 
