@@ -31,13 +31,9 @@ CORE_VENV_DIR_NAME = paths.normalize_path(config.get_optional(section="CoreProje
 REMOTE_PROJECT_DIR_PATH = paths.normalize_path(tilda_replacer(config.get(section="RemoteProject", option="DIR_PATH")), save_prefix=True)
 REMOTE_SERVICE_FILENAME = config.get(section="RemoteProject", option="SERVICE_FILENAME")
 REMOTE_PATH_TO_SERVICES_DIR = "/etc/systemd/system/"
-REMOTE_LOG_FILE_PATH = config.get_optional(section="RemoteProject", option="LOG_FILE_PATH")
-if REMOTE_LOG_FILE_PATH:
-    REMOTE_LOG_FILE_PATH = tilda_replacer(REMOTE_LOG_FILE_PATH)
 
 # LocalProject settings
 LOCAL_PROJECT_DIR_PATH = paths.normalize_path(config.get(section="LocalProject", option="DIR_PATH"), save_prefix=True)
-LOCAL_LOG_FILE_PATH_TO_DOWNLOAD_IN = config.get_optional(section="LocalProject", option="LOG_FILE_PATH_TO_DOWNLOAD_IN")
 LOCAL_SERVICE_CONTENT_PATH = config.get_optional(section="LocalProject", option="SERVICE_CONTENT_PATH")
 LOCAL_IGNORE_FILE_PATH = config.get_optional(section="LocalProject", option="IGNORE_FILE_PATH", default_value=os.path.join(PROPERTIES_DIR, "ProjectDelivery.ignore"), set_default_value_if_not_exists=False)
 

@@ -1,16 +1,8 @@
 from . import base
 from .file_analysing import FileAnalysing
-from .. import base as sspd_properties, checker, exceptions
+from .. import base as sspd_properties, exceptions
 from ..utils import io
 from ..utils.paths import FilePath
-
-
-def download_log_file_from_remote_machine():
-    if checker.is_download_log_file_available():
-        base.download_file_from_remote_machine(
-            remote_filepath=sspd_properties.REMOTE_LOG_FILE_PATH,
-            local_filepath=sspd_properties.LOCAL_LOG_FILE_PATH_TO_DOWNLOAD_IN,
-        )
 
 
 def send_files_to_remote_project(files: set[FilePath]):

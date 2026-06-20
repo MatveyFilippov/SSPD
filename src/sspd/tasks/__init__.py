@@ -8,6 +8,5 @@ from .file_analysing import (
     FileAnalysing, is_file_updated,
 )
 from .mastered import (
-    delete_files_in_remote_project_dir, download_log_file_from_remote_machine, send_files_to_remote_project,
-    update_remote_project,
+    delete_files_in_remote_project_dir, send_files_to_remote_project, update_remote_project,
 )

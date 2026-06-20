@@ -112,8 +112,6 @@ def main() -> NoReturn:
                     sys.exit(0)
                 case Direction.PUSH_PROJECT:
                     sspd.tasks.update_remote_project()
-                case Direction.PULL_LOGS:
-                    sspd.tasks.download_log_file_from_remote_machine()
                 case Direction.START_RUNNING:
                     sspd.tasks.start_running_remote_service()
                 case Direction.STOP_RUNNING:
