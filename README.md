@@ -174,33 +174,33 @@ if __name__ == "__main__":
 
 ## ⚙️ Configuration
 
-To initialize SSPD you have to creates `Config` from [`config`](src/sspd/config.py) with the following sections:
+To initialize SSPD you have to create `Config` from [`config`](src/sspd/config.py) with the following sections:
 
-#### RemoteMachine
+#### `RemoteMachine`
 - `username` - SSH username
 - `password` - SSH password
 - `host` - Remote server address
 - `port` - SSH port (default: `22`)
 - `reject_connection_if_unknown_host` - Enable policy for automatically rejecting the unknown hostname & key (default: `True`)
 
-#### RemoteProject
+#### `RemoteProject`
 - `dir_path` - Remote project directory (supports `~/` for home)
 - `lifecycle` - Remote project lifecycle manager (default: `None`)
 
-#### RemoteProjectLifecycleByService
+#### `RemoteProjectLifecycleByService`
 - `service_filename` - Name of the systemd service file
 - `services_dir_path` - Directory where systemd service files are stored (default: `/etc/systemd/system`)
 - `service_content` - Custom service file content (default: `None`)
 
-#### LocalProject
+#### `LocalProject`
 - `dir_path` - Local project directory
 
-#### PythonCore
+#### `PythonCore`
 - `venv_dir_name` - Name of the virtual environment directory (default: `.venv`)
 - `executable_file_name` - Name of the main executable file (default: `main.py`)
 - `requirements_file_name` - Name of the requirements file (default: `None`)
 
-#### Config
+#### `Config`
 - `remote_machine` - Remote machine connection settings (`RemoteMachine`)
 - `remote_project` - Remote project settings (`RemoteProject`)
 - `local_project` - Local project settings (`LocalProject`)
