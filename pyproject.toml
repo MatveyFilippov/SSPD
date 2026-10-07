@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "sspd"
-version = "3.0.0-SNAPSHOT"
+version = "3.0.0dev1"
 description = "SSH/SFTP Project Delivery"
 readme = "README.md"
 requires-python = ">=3.11"
