@@ -1,4 +1,5 @@
 from functools import lru_cache
+import os
 import re
 
 
@@ -14,13 +15,8 @@ def split_filepath(filepath: str) -> list[str]:
 
 
 @lru_cache(maxsize=1_000)
-def normalize_path(path: str, save_prefix: bool = False, save_suffix: bool = False) -> str:
-    path = path.replace("\\", "/")
-    while not save_prefix and path.startswith("/"):
-        path = path.removeprefix("/")
-    while not save_suffix and path.endswith("/"):
-        path = path.removesuffix("/")
-    return path
+def get_parent_dir_path(path: str) -> str:
+    return os.path.dirname(path) or "."
 
 
 class FilePath:
@@ -63,8 +59,7 @@ class FilePath:
         return f"FilePath(abstract='{self.__JOINED_ABSTRACT}')"
 
     def to_absolute(self, project_folderpath: str) -> str:
-        if not project_folderpath.endswith("/"):
-            project_folderpath += "/"
+        project_folderpath = project_folderpath.rstrip("/") + "/"
         return project_folderpath + self.__JOINED_ABSTRACT
 
     def child(self, *file_or_folder_names: str) -> 'FilePath':

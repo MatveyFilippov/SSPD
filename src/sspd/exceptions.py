@@ -1,11 +1,36 @@
-import sys
+class InitializationException(Exception):
+    pass
 
 
-class SSPDUnhandleableException(SystemExit):
-    def __init__(self, text: str):
-        from .base import close_connections
-        close_connections()
-        print("SSPD-Exception:", text)
-        input("Press ENTER...")
-        sys.exit(-1)  # os.abort()
-        # super().__init__(text)
+class NotInitializedException(InitializationException):
+    def __init__(self):
+        super().__init__("SSPD project not initialized")
+
+
+class ConnectionException(Exception):
+    pass
+
+
+class NotConnectedException(ConnectionException):
+    def __init__(self):
+        super().__init__("SSPD not connected to remote machine")
+
+
+class RemoteCommandExecutionException(Exception):
+    pass
+
+
+class RemotePathException(RemoteCommandExecutionException):
+    pass
+
+
+class RemoteFileException(FileNotFoundError):
+    pass
+
+
+class LocalFileException(FileNotFoundError):
+    pass
+
+
+class CheckFailedException(InitializationException):
+    pass
