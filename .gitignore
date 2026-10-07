@@ -1,9 +1,29 @@
-/venv/
-/.venv/
-.idea/
+# Byte-compiled / optimized / DLL files
 __pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+.venv/
+virtualenv/
+pyenv/
+
+# Build
+*.egg-info/
+*.egg
+dist/
+build/
+eggs/
+parts/
+sdist/
+
+# IDE / Editors
+.vscode/
+.idea/
+*~
 .DS_Store
-/playground.py
-/build/
-/sspd.egg-info/
-/dist/
+
+# Logs
+logs/
+*.log
