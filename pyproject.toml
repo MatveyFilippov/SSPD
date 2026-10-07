@@ -4,22 +4,24 @@ build-backend = "hatchling.build"
 
 [project]
 name = "sspd"
-version = "2.1.1"
-description = "SSH/SCP Project Delivery"
+version = "3.0.0-SNAPSHOT"
+description = "SSH/SFTP Project Delivery"
 readme = "README.md"
 requires-python = ">=3.11"
 authors = [
-    { name = "homer", email = "mdfilippov_2@edu.hse.ru" }
+    { name = "homer", email = "matdufi2004@gmail.com" }
 ]
-license = { text = "MIT" }
+license = "MIT"
+license-files = ["LICENSE"]
 classifiers = [
     "Programming Language :: Python :: 3.11",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent"
 ]
 dependencies = [
-    'paramiko==5.0.0',
-    'pathspec==1.1.1',
+    "paramiko~=5.0",
+    "pathspec~=1.1",
+    "click~=8.5",
 ]
 
 [project.urls]
@@ -27,6 +29,3 @@ GitHub = "https://github.com/MatveyFilippov/SSPD"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/sspd"]
-
-# pip install -U build
-# python -m build
