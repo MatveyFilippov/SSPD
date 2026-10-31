@@ -99,10 +99,12 @@ def delete_file_in_remote_machine(remote_filepath: str):
 
 
 def delete_folder_in_remote_machine(remote_folderpath: str):
+    base_path = remote_folderpath.rstrip("/") + "/"
     for item in base.SFTP_REMOTE_MACHINE.listdir(remote_folderpath):
-        if checker.is_remote_dir(item):
-            delete_folder_in_remote_machine(remote_folderpath)
-        delete_file_in_remote_machine(item)
+        item_path = base_path + item
+        if checker.is_remote_dir(item_path):
+            delete_folder_in_remote_machine(item_path)
+        delete_file_in_remote_machine(item_path)
     io.print_info(f"Deleting remote folder '{remote_folderpath}'")
     base.SFTP_REMOTE_MACHINE.rmdir(remote_folderpath)
     io.print_info("Success")
